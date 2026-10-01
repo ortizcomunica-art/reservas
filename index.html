@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>El Barril del Profe - Reservas y Pedidos</title>
   <style>
-    /* Cargamos la tipografía desde el repositorio de GitHub */
+    /* Tipografía personalizada */
     @font-face {
       font-family: 'BroncoPersonalUse';
       src: url('https://raw.githubusercontent.com/ortizcomunica-art/reservas/d5152a9f6ad1cc4b5d2bcc999870b5715b375cb4/BroncoPersonalUse.ttf') format('truetype');
@@ -13,22 +13,29 @@
       font-style: normal;
     }
 
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 20px;
-      background-color: #f4f4f4;
+      background-color: #121212; /* Fondo oscuro rústico */
+      color: #f1f1f1;
     }
 
-    /* Estilo para la tipografía personalizada en títulos */
+    /* Tipografía en títulos principales */
     .section-title h2, 
-    .panel-title h3 {
+    .panel-title h3,
+    .category-title {
       font-family: 'BroncoPersonalUse', sans-serif;
+      letter-spacing: 1px;
     }
 
-    /* Estilo para el Logo */
+    /* Logo principal */
     .brand-logo {
-      max-width: 160px;
+      max-width: 180px;
       height: auto;
       display: block;
       margin: 0 auto 15px auto;
@@ -36,7 +43,20 @@
 
     .section-title {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
+    }
+
+    .section-title small {
+      color: #e5a638; /* Dorado */
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: bold;
+    }
+
+    .section-title h2 {
+      color: #d32f2f; /* Rojo parrilla */
+      font-size: 2.2em;
+      margin: 5px 0 0 0;
     }
 
     .order-layout {
@@ -49,53 +69,67 @@
 
     .panel {
       flex: 1;
-      min-width: 300px;
-      background: #fff;
+      min-width: 320px;
+      background: #1e1e1e; /* Tarjeta oscura */
       padding: 20px;
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border: 1px solid #333;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
     }
 
     .panel-title {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 2px solid #eee;
+      border-bottom: 2px solid #333;
       padding-bottom: 10px;
       margin-bottom: 15px;
     }
 
+    .panel-title h3 {
+      margin: 0;
+      color: #e5a638; /* Dorado */
+      font-size: 1.5em;
+    }
+
+    .panel-title span {
+      color: #aaa;
+      font-size: 0.85em;
+    }
+
     .category-title {
-      font-weight: bold;
-      font-size: 1.1em;
-      margin-top: 15px;
+      font-size: 1.3em;
+      margin-top: 20px;
       margin-bottom: 10px;
-      color: #333;
+      color: #e5a638; /* Dorado */
       border-left: 4px solid #d32f2f;
       padding-left: 8px;
     }
 
     .product {
-      border: 1px solid #eee;
+      background-color: #272727;
+      border: 1px solid #3d3d3d;
       border-radius: 6px;
-      padding: 10px;
-      margin-bottom: 10px;
-      position: relative;
+      padding: 12px;
+      margin-bottom: 12px;
     }
 
     .product h4 {
       margin: 0 0 5px 0;
+      color: #ffffff;
+      font-size: 1.1em;
     }
 
     .price {
       float: right;
       font-weight: bold;
-      color: #d32f2f;
+      color: #e5a638; /* Dorado */
+      font-size: 1.1em;
     }
 
     .product-description {
       font-size: 0.85em;
-      color: #666;
+      color: #bbb;
       margin: 0 0 10px 0;
     }
 
@@ -105,9 +139,30 @@
       align-items: center;
     }
 
+    .quantity {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
     .quantity button {
-      width: 28px;
-      height: 28px;
+      width: 30px;
+      height: 30px;
+      background-color: #333;
+      color: #fff;
+      border: 1px solid #555;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .quantity button:hover {
+      background-color: #444;
+    }
+
+    .quantity span {
+      min-width: 20px;
+      text-align: center;
       font-weight: bold;
     }
 
@@ -115,10 +170,11 @@
       background-color: #d32f2f;
       color: white;
       border: none;
-      padding: 8px 12px;
+      padding: 8px 14px;
       border-radius: 4px;
       cursor: pointer;
       font-weight: bold;
+      transition: background-color 0.2s;
     }
 
     .add-button:hover, .location-button:hover, .submit-button:hover {
@@ -126,31 +182,49 @@
     }
 
     .form-group {
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
 
     .form-group label {
       display: block;
-      margin-bottom: 4px;
+      margin-bottom: 5px;
       font-size: 0.9em;
       font-weight: bold;
+      color: #ddd;
     }
 
     .form-group input, .form-group textarea {
       width: 100%;
-      padding: 8px;
-      box-sizing: border-box;
-      border: 1px solid #ccc;
+      padding: 9px;
+      background-color: #2a2a2a;
+      border: 1px solid #444;
+      color: #fff;
       border-radius: 4px;
     }
 
+    .form-group input:focus, .form-group textarea:focus {
+      outline: none;
+      border-color: #e5a638;
+    }
+
     .required {
-      color: red;
+      color: #d32f2f;
     }
 
     .delivery-options, .payment-options {
       display: flex;
-      gap: 10px;
+      gap: 15px;
+      background: #272727;
+      padding: 10px;
+      border-radius: 4px;
+      border: 1px solid #3d3d3d;
+    }
+
+    .delivery-option, .payment-option {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
     }
 
     .map-header {
@@ -162,21 +236,28 @@
 
     .map-status {
       font-size: 0.85em;
-      color: #555;
+      color: #aaa;
       margin: 8px 0;
     }
 
     #deliveryInfo {
-      background-color: #e8f5e9;
+      background-color: #1b3320;
+      border: 1px solid #2e7d32;
       padding: 10px;
       border-radius: 6px;
       margin-top: 10px;
       font-weight: bold;
-      color: #2e7d32;
+      color: #81c784;
+    }
+
+    .cart-empty {
+      color: #888;
+      font-style: italic;
+      font-size: 0.9em;
     }
 
     .totals {
-      border-top: 2px solid #eee;
+      border-top: 2px solid #333;
       padding-top: 10px;
       margin-top: 15px;
     }
@@ -184,13 +265,17 @@
     .total-row {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
+      color: #ccc;
     }
 
     .total-row.final {
-      font-size: 1.2em;
+      font-size: 1.25em;
       font-weight: bold;
-      color: #d32f2f;
+      color: #e5a638;
+      border-top: 1px solid #444;
+      padding-top: 8px;
+      margin-top: 8px;
     }
 
     .checkbox-line {
@@ -199,13 +284,15 @@
       gap: 8px;
       font-size: 0.85em;
       margin-top: 15px;
+      color: #bbb;
     }
 
     .submit-button {
       width: 100%;
       padding: 12px;
-      font-size: 1em;
+      font-size: 1.05em;
       margin-top: 15px;
+      letter-spacing: 0.5px;
     }
 
     .info-grid {
@@ -213,7 +300,8 @@
       justify-content: space-around;
       max-width: 1100px;
       margin: 30px auto 0 auto;
-      background: white;
+      background: #1e1e1e;
+      border: 1px solid #333;
       padding: 15px;
       border-radius: 8px;
     }
@@ -224,7 +312,13 @@
 
     .info-card strong {
       display: block;
-      color: #d32f2f;
+      color: #e5a638;
+      margin-bottom: 4px;
+    }
+
+    .info-card span {
+      color: #ccc;
+      font-size: 0.9em;
     }
   </style>
 </head>
@@ -239,7 +333,7 @@
 
   <div class="section-title">
     <small>Reserva tu pedido</small>
-    <h2>Haz tu pedido</h2>
+    <h2>HAZ TU PEDIDO</h2>
   </div>
 
   <div class="order-layout">
@@ -247,7 +341,7 @@
     <!-- MENU -->
     <div class="panel">
       <div class="panel-title">
-        <h3>Menú</h3>
+        <h3>MENÚ</h3>
         <span>Sábado 10 de octubre</span>
       </div>
 
@@ -371,7 +465,7 @@
     <!-- FORMULARIO / CARRITO -->
     <div class="panel">
       <div class="panel-title">
-        <h3>Tu pedido</h3>
+        <h3>TU PEDIDO</h3>
         <span>Reserva</span>
       </div>
 
@@ -451,7 +545,7 @@
           <textarea id="reference" placeholder="Ej. Casa blanca, junto al parque..."></textarea>
         </div>
 
-        <div id="deliveryInfo"></div>
+        <div id="deliveryInfo" style="display:none;"></div>
       </div>
 
       <!-- CARRITO -->
@@ -501,7 +595,7 @@
         <textarea id="notes" placeholder="Alguna indicación adicional..."></textarea>
       </div>
 
-      <!-- BOTON -->
+      <!-- BOTÓN -->
       <button id="submitButton" type="button" class="submit-button" onclick="submitOrder()">
         RESERVAR Y ENVIAR A WHATSAPP
       </button>
