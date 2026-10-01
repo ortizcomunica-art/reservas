@@ -2,3744 +2,651 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <meta
-    name="description"
-    content="EL BARRIL DEL PROFE - Carnes al barril"
-  >
-
-  <title>EL BARRIL DEL PROFE | Carnes al Barril</title>
-
-  <!-- =========================================================
-       LEAFLET - MAPA
-       ========================================================= -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="EL BARRIL DEL PROFE - Carnes al barril">
+  <title>El Barril del Profe - Pedidos y Reservas</title>
+  
+  <!-- Leaflet CSS para el mapa -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  
   <style>
-
-    /* =========================================================
-       VARIABLES
-       ========================================================= */
-
     :root {
-      --bg: #11100e;
-      --bg-2: #1a1713;
-      --card: #211d18;
-      --card-2: #29231d;
-      --cream: #f4ead7;
-      --cream-2: #d9c7a7;
-      --brown: #6e4327;
-      --brown-dark: #3c2517;
-      --orange: #c76b25;
-      --orange-light: #e28a38;
-      --red: #9d2f20;
-      --green: #58733d;
-      --white: #ffffff;
-      --muted: #aaa095;
-      --border: rgba(244,234,215,.12);
-      --shadow: 0 15px 40px rgba(0,0,0,.35);
-      --radius: 16px;
+      --primary: #c82333;
+      --primary-dark: #a71d2a;
+      --dark: #121212;
+      --panel-bg: #1e1e1e;
+      --card-bg: #2a2a2a;
+      --text: #f8f9fa;
+      --text-muted: #aaa;
+      --border: #333;
+      --accent: #ffc107;
+      --success: #28a745;
     }
 
-    /* =========================================================
-       RESET
-       ========================================================= */
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-      background:
-        radial-gradient(
-          circle at top,
-          #2a2018 0,
-          var(--bg) 45%
-        );
-      color: var(--cream);
-      line-height: 1.5;
-    }
-
-    button,
-    input,
-    select,
-    textarea {
-      font: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    img {
-      max-width: 100%;
-    }
-
-    /* =========================================================
-       HEADER
-       ========================================================= */
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--dark); color: var(--text); line-height: 1.6; }
 
     header {
+      background-color: rgba(0,0,0,0.9);
+      padding: 15px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       position: sticky;
       top: 0;
       z-index: 1000;
-
-      background: rgba(17,16,14,.94);
-      backdrop-filter: blur(12px);
-
-      border-bottom:
-        1px solid var(--border);
+      border-bottom: 1px solid var(--border);
     }
 
-    .header-inner {
-      max-width: 1180px;
-      margin: auto;
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: white; }
+    .brand-mark { background: var(--primary); padding: 8px 12px; font-weight: bold; border-radius: 6px; font-size: 1.1rem; }
+    .brand-text strong { display: block; font-size: 1.1rem; }
+    .brand-text span { font-size: 0.8rem; color: var(--text-muted); }
 
-      min-height: 78px;
+    nav { display: flex; gap: 15px; align-items: center; }
+    nav a { color: var(--text); text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: color 0.2s; }
+    nav a:hover { color: var(--accent); }
 
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      padding: 12px 20px;
+    .admin-btn {
+      background: transparent;
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      padding: 6px 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s;
     }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand-mark {
-      width: 48px;
-      height: 48px;
-
-      border-radius: 50%;
-
-      display: grid;
-      place-items: center;
-
-      background:
-        linear-gradient(
-          145deg,
-          var(--orange-light),
-          var(--brown)
-        );
-
-      border: 2px solid var(--cream);
-
-      font-weight: 900;
-      font-size: 14px;
-
-      box-shadow:
-        0 4px 15px rgba(0,0,0,.35);
-    }
-
-    .brand-text strong {
-      display: block;
-
-      font-size: 18px;
-      letter-spacing: 1px;
-
-      font-weight: 900;
-    }
-
-    .brand-text span {
-      display: block;
-
-      color: var(--orange-light);
-
-      font-size: 10px;
-      font-weight: 700;
-
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
-
-    nav {
-      display: flex;
-      gap: 28px;
-    }
-
-    nav a {
-      font-size: 13px;
-      font-weight: 700;
-
-      color: var(--cream-2);
-
-      transition: .2s;
-    }
-
-    nav a:hover {
-      color: var(--orange-light);
-    }
-
-    /* =========================================================
-       HERO
-       ========================================================= */
+    .admin-btn:hover { background: var(--accent); color: #000; }
 
     .hero {
-      min-height: 500px;
-
-      display: flex;
-      align-items: center;
-
-      background:
-        linear-gradient(
-          90deg,
-          rgba(17,16,14,.98) 0%,
-          rgba(17,16,14,.88) 42%,
-          rgba(17,16,14,.35) 100%
-        ),
-        radial-gradient(
-          circle at 75% 45%,
-          #7a4320 0,
-          #241b14 30%,
-          #11100e 70%
-        );
-
-      border-bottom:
-        1px solid var(--border);
+      text-align: center;
+      padding: 60px 20px;
+      background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=1200&q=80');
+      background-size: cover;
+      background-position: center;
     }
-
-    .hero-inner {
-      max-width: 1180px;
-      width: 100%;
-
-      margin: auto;
-
-      padding:
-        75px 20px;
-    }
-
-    .hero-label {
-      display: inline-block;
-
-      color: var(--orange-light);
-
-      font-size: 12px;
-      font-weight: 800;
-
-      letter-spacing: 3px;
-      text-transform: uppercase;
-
-      margin-bottom: 15px;
-    }
-
-    .hero h1 {
-      max-width: 700px;
-
-      font-family:
-        Georgia,
-        "Times New Roman",
-        serif;
-
-      font-size:
-        clamp(42px, 7vw, 82px);
-
-      line-height: .95;
-
-      text-transform: uppercase;
-
-      text-shadow:
-        4px 5px 0 #000;
-    }
-
-    .hero h1 span {
-      color: var(--orange-light);
-    }
-
-    .hero p {
-      max-width: 560px;
-
-      margin-top: 25px;
-
-      color: var(--cream-2);
-
-      font-size: 17px;
-    }
-
+    .hero-label { background: var(--primary); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; }
+    .hero h1 { font-size: 2.5rem; margin: 15px 0; color: white; }
+    .hero h1 span { color: var(--accent); }
+    .hero p { color: var(--text-muted); max-width: 600px; margin: 0 auto 20px; }
     .hero-button {
-      display: inline-flex;
-
-      margin-top: 30px;
-
-      padding:
-        14px 24px;
-
-      border-radius: 9px;
-
-      background:
-        linear-gradient(
-          135deg,
-          var(--orange-light),
-          var(--orange)
-        );
-
+      display: inline-block;
+      background: var(--primary);
       color: white;
-
-      font-weight: 900;
-
-      box-shadow:
-        0 8px 25px rgba(0,0,0,.35);
-
-      transition: transform .2s;
+      padding: 12px 28px;
+      text-decoration: none;
+      font-weight: bold;
+      border-radius: 6px;
+      transition: background 0.2s;
     }
+    .hero-button:hover { background: var(--primary-dark); }
 
-    .hero-button:hover {
-      transform: translateY(-2px);
-    }
-
-    /* =========================================================
-       MAIN
-       ========================================================= */
-
-    main {
-      max-width: 1180px;
-      margin: auto;
-
-      padding:
-        70px 20px;
-    }
-
-    .section-title {
-      margin-bottom: 35px;
-    }
-
-    .section-title small {
-      color: var(--orange-light);
-
-      font-size: 11px;
-      font-weight: 900;
-
-      letter-spacing: 3px;
-      text-transform: uppercase;
-    }
-
-    .section-title h2 {
-      margin-top: 5px;
-
-      font-family:
-        Georgia,
-        "Times New Roman",
-        serif;
-
-      font-size: 38px;
-
-      text-transform: uppercase;
-    }
-
-    /* =========================================================
-       LAYOUT
-       ========================================================= */
+    .section-title { text-align: center; margin: 40px 0 20px; }
+    .section-title small { color: var(--accent); text-transform: uppercase; font-weight: bold; }
+    .section-title h2 { font-size: 2rem; }
 
     .order-layout {
       display: grid;
-
-      grid-template-columns:
-        minmax(0, 1.35fr)
-        minmax(320px, .65fr);
-
-      gap: 25px;
-
-      align-items: start;
-    }
-
-    /* =========================================================
-       CARD
-       ========================================================= */
-
-    .panel {
-      background:
-        linear-gradient(
-          145deg,
-          var(--card),
-          var(--bg-2)
-        );
-
-      border:
-        1px solid var(--border);
-
-      border-radius:
-        var(--radius);
-
-      box-shadow:
-        var(--shadow);
-
-      padding: 24px;
-    }
-
-    .panel-title {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      margin-bottom: 22px;
-    }
-
-    .panel-title h3 {
-      font-family:
-        Georgia,
-        "Times New Roman",
-        serif;
-
-      font-size: 25px;
-
-      text-transform: uppercase;
-    }
-
-    .panel-title span {
-      color: var(--muted);
-
-      font-size: 12px;
-    }
-
-    /* =========================================================
-       MENU
-       ========================================================= */
-
-    .category-title {
-      margin:
-        25px 0 12px;
-
-      color: var(--orange-light);
-
-      font-size: 12px;
-      font-weight: 900;
-
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
-
-    .products {
-      display: grid;
-
-      grid-template-columns:
-        repeat(2, minmax(0,1fr));
-
-      gap: 12px;
-    }
-
-    .product {
-      position: relative;
-
-      padding: 18px;
-
-      border:
-        1px solid var(--border);
-
-      border-radius: 12px;
-
-      background:
-        rgba(255,255,255,.025);
-
-      transition:
-        border-color .2s,
-        transform .2s,
-        background .2s;
-    }
-
-    .product:hover {
-      transform: translateY(-2px);
-
-      border-color:
-        rgba(226,138,56,.5);
-
-      background:
-        rgba(255,255,255,.04);
-    }
-
-    .product h4 {
-      padding-right: 60px;
-
-      font-size: 17px;
-    }
-
-    .product-description {
-      min-height: 42px;
-
-      margin-top: 5px;
-
-      color: var(--muted);
-
-      font-size: 12px;
-    }
-
-    .price {
-      position: absolute;
-
-      right: 15px;
-      top: 15px;
-
-      color: var(--orange-light);
-
-      font-size: 17px;
-      font-weight: 900;
-    }
-
-    .product-controls {
-      display: flex;
-
-      align-items: center;
-      justify-content: space-between;
-
-      margin-top: 15px;
-    }
-
-    .quantity {
-      display: flex;
-      align-items: center;
-
-      border:
-        1px solid var(--border);
-
-      border-radius: 8px;
-
-      overflow: hidden;
-    }
-
-    .quantity button {
-      width: 34px;
-      height: 32px;
-
-      border: 0;
-
-      background:
-        rgba(255,255,255,.05);
-
-      color: var(--cream);
-
-      font-size: 18px;
-    }
-
-    .quantity button:hover {
-      background:
-        var(--brown);
-    }
-
-    .quantity span {
-      width: 34px;
-
-      text-align: center;
-
-      font-weight: 800;
-    }
-
-    .add-button {
-      padding:
-        8px 12px;
-
-      border: 0;
-      border-radius: 7px;
-
-      background:
-        var(--brown);
-
-      color: white;
-
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    .add-button:hover {
-      background:
-        var(--orange);
-    }
-
-    /* =========================================================
-       FORM
-       ========================================================= */
-
-    .form-group {
-      margin-bottom: 17px;
-    }
-
-    .form-group label {
-      display: block;
-
-      margin-bottom: 7px;
-
-      color: var(--cream-2);
-
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    .required {
-      color: var(--orange-light);
-    }
-
-    input,
-    select,
-    textarea {
-      width: 100%;
-
-      padding:
-        12px 13px;
-
-      border:
-        1px solid var(--border);
-
-      border-radius: 9px;
-
-      outline: none;
-
-      background:
-        #151310;
-
-      color:
-        var(--cream);
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color:
-        var(--orange-light);
-
-      box-shadow:
-        0 0 0 3px rgba(226,138,56,.08);
-    }
-
-    textarea {
-      min-height: 80px;
-
-      resize: vertical;
-    }
-
-    .two-columns {
-      display: grid;
-
-      grid-template-columns:
-        1fr 1fr;
-
-      gap: 12px;
-    }
-
-    /* =========================================================
-       DELIVERY OPTIONS
-       ========================================================= */
-
-    .delivery-options {
-      display: grid;
-
-      grid-template-columns:
-        repeat(3,1fr);
-
-      gap: 8px;
-    }
-
-    .delivery-option {
-      position: relative;
-    }
-
-    .delivery-option input {
-      position: absolute;
-
-      opacity: 0;
-      pointer-events: none;
-    }
-
-    .delivery-option label {
-      display: block;
-
-      padding: 13px 8px;
-
-      text-align: center;
-
-      border:
-        1px solid var(--border);
-
-      border-radius: 9px;
-
-      color: var(--cream-2);
-
-      font-size: 12px;
-      font-weight: 800;
-
-      cursor: pointer;
-    }
-
-    .delivery-option input:checked + label {
-      border-color:
-        var(--orange-light);
-
-      background:
-        rgba(199,107,37,.14);
-
-      color:
-        var(--orange-light);
-    }
-
-    /* =========================================================
-       DELIVERY BOX
-       ========================================================= */
-
-    #deliveryBox {
-      display: none;
-
-      margin-top: 20px;
-
-      padding: 15px;
-
-      border:
-        1px solid rgba(226,138,56,.25);
-
-      border-radius: 12px;
-
-      background:
-        rgba(199,107,37,.05);
-    }
-
-    #deliveryBox.visible {
-      display: block;
-    }
-
-    .map-header {
-      display: flex;
-
-      align-items: center;
-      justify-content: space-between;
-
-      gap: 10px;
-
-      margin-bottom: 10px;
-    }
-
-    .map-header strong {
-      font-size: 14px;
-    }
-
-    .location-button {
-      border: 0;
-
-      border-radius: 7px;
-
-      padding:
-        8px 10px;
-
-      background:
-        var(--green);
-
-      color: white;
-
-      font-size: 11px;
-      font-weight: 800;
-    }
-
-    #map {
-      height: 290px;
-
-      width: 100%;
-
-      border-radius: 11px;
-
-      overflow: hidden;
-
-      margin-bottom: 12px;
-    }
-
-    .map-status {
-      margin-bottom: 12px;
-
-      color: var(--muted);
-
-      font-size: 11px;
-    }
-
-    /* =========================================================
-       PAYMENT
-       ========================================================= */
-
-    .payment-options {
-      display: grid;
-
-      grid-template-columns:
-        1fr 1fr;
-
-      gap: 10px;
-    }
-
-    .payment-option {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-
-      padding: 11px;
-
-      border:
-        1px solid var(--border);
-
-      border-radius: 9px;
-    }
-
-    .payment-option input {
-      width: auto;
-    }
-
-    .payment-option label {
-      margin: 0;
-
-      cursor: pointer;
-    }
-
-    /* =========================================================
-       CART
-       ========================================================= */
-
-    .cart-empty {
-      padding: 25px 10px;
-
-      color: var(--muted);
-
-      text-align: center;
-
-      font-size: 13px;
-    }
-
-    .cart-item {
-      display: grid;
-
-      grid-template-columns:
-        1fr auto;
-
-      gap: 10px;
-
-      padding:
-        12px 0;
-
-      border-bottom:
-        1px solid var(--border);
-    }
-
-    .cart-item-name {
-      font-size: 13px;
-      font-weight: 800;
-    }
-
-    .cart-item-detail {
-      margin-top: 3px;
-
-      color: var(--muted);
-
-      font-size: 11px;
-    }
-
-    .cart-item-price {
-      font-weight: 900;
-    }
-
-    .cart-remove {
-      border: 0;
-
-      background: transparent;
-
-      color: #d77;
-
-      font-size: 11px;
-    }
-
-    .totals {
-      margin-top: 20px;
-    }
-
-    .total-row {
-      display: flex;
-
-      justify-content: space-between;
-
-      gap: 15px;
-
-      padding: 6px 0;
-
-      color: var(--cream-2);
-
-      font-size: 13px;
-    }
-
-    .total-row.final {
-      margin-top: 10px;
-
-      padding-top: 15px;
-
-      border-top:
-        1px solid var(--border);
-
-      color: white;
-
-      font-size: 21px;
-      font-weight: 900;
-    }
-
-    /* =========================================================
-       CHECKBOX
-       ========================================================= */
-
-    .checkbox-line {
-      display: flex;
-
-      align-items: flex-start;
-
-      gap: 9px;
-
-      margin-top: 12px;
-
-      color: var(--muted);
-
-      font-size: 11px;
-    }
-
-    .checkbox-line input {
-      width: auto;
-
-      margin-top: 2px;
-    }
-
-    /* =========================================================
-       SUBMIT
-       ========================================================= */
-
-    .submit-button {
-      width: 100%;
-
-      margin-top: 20px;
-
-      padding:
-        15px;
-
-      border: 0;
-
-      border-radius: 10px;
-
-      background:
-        linear-gradient(
-          135deg,
-          var(--orange-light),
-          var(--orange)
-        );
-
-      color: white;
-
-      font-weight: 900;
-
-      text-transform: uppercase;
-
-      letter-spacing: .5px;
-
-      box-shadow:
-        0 8px 25px rgba(0,0,0,.25);
-    }
-
-    .submit-button:hover {
-      filter: brightness(1.08);
-    }
-
-    .submit-button:disabled {
-      opacity: .55;
-      cursor: wait;
-    }
-
-    /* =========================================================
-       INFO
-       ========================================================= */
-
-    .info-grid {
-      display: grid;
-
-      grid-template-columns:
-        repeat(3,1fr);
-
-      gap: 15px;
-
-      margin-top: 25px;
-    }
-
-    .info-card {
-      padding: 20px;
-
-      border:
-        1px solid var(--border);
-
-      border-radius: 12px;
-
-      background:
-        rgba(255,255,255,.025);
-    }
-
-    .info-card strong {
-      display: block;
-
-      margin-bottom: 5px;
-
-      color: var(--orange-light);
-
-      font-size: 12px;
-
-      text-transform: uppercase;
-
-      letter-spacing: 1px;
-    }
-
-    .info-card span {
-      color: var(--cream-2);
-
-      font-size: 13px;
-    }
-
-    /* =========================================================
-       MODAL
-       ========================================================= */
-
-    .modal {
-      position: fixed;
-
-      inset: 0;
-
-      z-index: 3000;
-
-      display: none;
-
-      place-items: center;
-
-      padding: 20px;
-
-      background:
-        rgba(0,0,0,.78);
-
-      backdrop-filter: blur(5px);
-    }
-
-    .modal.visible {
-      display: grid;
-    }
-
-    .modal-card {
-      width: 100%;
-      max-width: 480px;
-
-      padding: 30px;
-
-      border:
-        1px solid var(--border);
-
-      border-radius: 18px;
-
-      background:
-        var(--card);
-
-      box-shadow:
-        0 30px 70px rgba(0,0,0,.5);
-
-      text-align: center;
-    }
-
-    .modal-icon {
-      width: 65px;
-      height: 65px;
-
-      margin: 0 auto 15px;
-
-      border-radius: 50%;
-
-      display: grid;
-      place-items: center;
-
-      background:
-        var(--green);
-
-      font-size: 28px;
-    }
-
-    .modal-card h3 {
-      font-family:
-        Georgia,
-        "Times New Roman",
-        serif;
-
-      font-size: 27px;
-    }
-
-    .modal-card p {
-      margin-top: 10px;
-
-      color: var(--muted);
-
-      font-size: 13px;
-    }
-
-    .modal-close {
-      width: 100%;
-
-      margin-top: 20px;
-
-      padding: 12px;
-
-      border: 0;
-
-      border-radius: 8px;
-
-      background:
-        var(--brown);
-
-      color: white;
-
-      font-weight: 800;
-    }
-
-    /* =========================================================
-       FOOTER
-       ========================================================= */
-
-    footer {
-      margin-top: 30px;
-
-      padding:
-        45px 20px;
-
-      border-top:
-        1px solid var(--border);
-
-      background:
-        #0b0a09;
-    }
-
-    .footer-inner {
-      max-width: 1180px;
-
-      margin: auto;
-
-      display: flex;
-
-      justify-content: space-between;
-
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       gap: 30px;
+      max-width: 1200px;
+      margin: 0 auto 40px;
+      padding: 0 20px;
     }
 
-    footer strong {
-      font-size: 15px;
+    .panel { background: var(--panel-bg); border-radius: 10px; padding: 25px; border: 1px solid var(--border); }
+    .panel-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+    .panel-title h3 { color: var(--accent); }
+
+    .category-title { font-weight: bold; margin: 20px 0 10px; color: var(--accent); text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; }
+    .products { display: flex; flex-direction: column; gap: 15px; }
+
+    .product { background: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border); position: relative; }
+    .product .price { position: absolute; top: 15px; right: 15px; font-weight: bold; color: var(--accent); }
+    .product h4 { margin-bottom: 5px; }
+    .product-description { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; }
+
+    .product-controls { display: flex; justify-content: space-between; align-items: center; }
+    .quantity { display: flex; align-items: center; background: #111; border-radius: 4px; overflow: hidden; }
+    .quantity button { background: none; border: none; color: white; width: 30px; height: 30px; cursor: pointer; font-size: 1.1rem; }
+    .quantity button:hover { background: #333; }
+    .quantity span { width: 30px; text-align: center; font-weight: bold; }
+
+    .add-button { background: var(--primary); border: none; color: white; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
+    .add-button:hover { background: var(--primary-dark); }
+
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--text-muted); }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%; padding: 10px; background: #111; border: 1px solid var(--border); border-radius: 6px; color: white; outline: none;
     }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); }
+    .required { color: var(--primary); }
 
-    footer p {
-      margin-top: 6px;
-
-      color: var(--muted);
-
-      font-size: 12px;
+    .delivery-options, .payment-options { display: flex; gap: 10px; margin-top: 5px; }
+    .delivery-option, .payment-option { flex: 1; }
+    .delivery-option input, .payment-option input { display: none; }
+    .delivery-option label, .payment-option label {
+      display: block; text-align: center; padding: 10px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 0.85rem;
     }
+    .delivery-option input:checked + label, .payment-option input:checked + label { background: var(--primary); border-color: var(--primary); font-weight: bold; }
 
-    .footer-link {
-      color: var(--orange-light);
-    }
+    #deliveryBox { display: none; margin-top: 15px; background: var(--card-bg); padding: 15px; border-radius: 8px; }
+    #map { height: 200px; border-radius: 6px; margin: 10px 0; }
+    .location-button { background: #333; border: 1px solid var(--border); color: white; padding: 5px 10px; font-size: 0.75rem; border-radius: 4px; cursor: pointer; }
 
-    /* =========================================================
-       RESPONSIVE
-       ========================================================= */
+    .cart-empty { text-align: center; color: var(--text-muted); padding: 20px; font-size: 0.9rem; }
+    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
 
-    @media(max-width: 850px) {
+    .totals { margin-top: 20px; border-top: 2px solid var(--border); padding-top: 10px; }
+    .total-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; }
+    .total-row.final { font-size: 1.2rem; color: var(--accent); font-weight: bold; border-top: 1px solid var(--border); padding-top: 8px; }
 
-      .order-layout {
-        grid-template-columns: 1fr;
-      }
+    .checkbox-line { display: flex; gap: 10px; font-size: 0.8rem; color: var(--text-muted); margin-top: 15px; cursor: pointer; }
 
-      .info-grid {
-        grid-template-columns: 1fr;
-      }
+    .submit-button { width: 100%; background: var(--success); border: none; color: white; padding: 14px; font-size: 1rem; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 20px; }
+    .submit-button:hover { background: #218838; }
 
-      .hero {
-        min-height: 430px;
-      }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; }
+    .modal-content { background: var(--panel-bg); padding: 30px; border-radius: 10px; max-width: 700px; width: 90%; border: 1px solid var(--border); max-height: 90vh; overflow-y: auto; }
+    .modal-close { background: var(--primary); border: none; color: white; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-top: 15px; float: right; }
 
-    }
+    .admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem; }
+    .admin-table th, .admin-table td { border: 1px solid var(--border); padding: 8px; text-align: left; }
+    .admin-table th { background: #111; color: var(--accent); }
+    .status-badge { padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; display: inline-block; }
+    .status-Pendiente { background: #ffc107; color: #000; }
+    .status-Aprobado { background: #28a745; color: #fff; }
+    .status-Rechazado { background: #dc3545; color: #fff; }
 
-    @media(max-width: 650px) {
-
-      .header-inner {
-        min-height: 70px;
-      }
-
-      nav {
-        gap: 12px;
-      }
-
-      nav a {
-        font-size: 11px;
-      }
-
-      .brand-mark {
-        width: 40px;
-        height: 40px;
-      }
-
-      .brand-text strong {
-        font-size: 14px;
-      }
-
-      .brand-text span {
-        font-size: 8px;
-      }
-
-      .products {
-        grid-template-columns: 1fr;
-      }
-
-      .two-columns {
-        grid-template-columns: 1fr;
-      }
-
-      .delivery-options {
-        grid-template-columns: 1fr;
-      }
-
-      .payment-options {
-        grid-template-columns: 1fr;
-      }
-
-      .footer-inner {
-        flex-direction: column;
-      }
-
-      .hero-inner {
-        padding:
-          60px 20px;
-      }
-
-    }
-
+    .action-btn { padding: 4px 8px; font-size: 0.75rem; border: none; border-radius: 3px; cursor: pointer; margin-right: 4px; }
+    .btn-approve { background: var(--success); color: white; }
+    .btn-reject { background: var(--primary); color: white; }
   </style>
 </head>
-
 <body>
 
-<!-- ===========================================================
-     HEADER
-     =========================================================== -->
-
-<header>
-
-  <div class="header-inner">
-
-    <a
-      href="#inicio"
-      class="brand"
-    >
-
-      <div class="brand-mark">
-        BARRIL
-      </div>
-
+  <header>
+    <a href="#inicio" class="brand">
+      <div class="brand-mark">BP</div>
       <div class="brand-text">
         <strong>EL BARRIL DEL PROFE</strong>
         <span>Carnes al Barril</span>
       </div>
-
     </a>
-
     <nav>
       <a href="#inicio">INICIO</a>
-      <a href="#quienes">QUIÉNES SOMOS</a>
       <a href="#pedido">PEDIDO</a>
-      <a href="#contactos">CONTACTOS</a>
+      <button class="admin-btn" onclick="openAdminModal()">ADMINISTRADOR</button>
     </nav>
+  </header>
 
+  <section id="inicio" class="hero">
+    <span class="hero-label">Carnes al Barril</span>
+    <h1>SABOR<br><span>HECHO A FUEGO</span></h1>
+    <p>Carnes preparadas al barril, acompañantes y bebidas para disfrutar en casa o con los amigos.</p>
+    <a href="#pedido" class="hero-button">HACER PEDIDO</a>
+  </section>
+
+  <div class="section-title" id="pedido">
+    <small>Reserva tu pedido</small>
+    <h2>Haz tu pedido</h2>
   </div>
 
-</header>
-
-
-<!-- ===========================================================
-     HERO
-     =========================================================== -->
-
-<section
-  id="inicio"
-  class="hero"
->
-
-  <div class="hero-inner">
-
-    <span class="hero-label">
-      Carnes al Barril
-    </span>
-
-    <h1>
-      SABOR<br>
-      <span>HECHO A FUEGO</span>
-    </h1>
-
-    <p>
-      Carnes preparadas al barril,
-      acompañantes y bebidas para disfrutar
-      en casa o con los amigos.
-    </p>
-
-    <a
-      href="#pedido"
-      class="hero-button"
-    >
-      HACER PEDIDO
-    </a>
-
-  </div>
-
-</section>
-
-
-<!-- ===========================================================
-     MAIN
-     =========================================================== -->
-
-<main>
-
-  <!-- =========================================================
-       QUIENES SOMOS
-       ========================================================= -->
-
-  <section id="quienes">
-
-    <div class="section-title">
-
-      <small>
-        Nuestra historia
-      </small>
-
-      <h2>
-        Quiénes somos
-      </h2>
-
-    </div>
-
+  <div class="order-layout">
+    <!-- PANEL DE MENÚ -->
     <div class="panel">
-
-      <p>
-        <strong>EL BARRIL DEL PROFE</strong>
-        nace como una propuesta sencilla de comida
-        preparada con sabor casero y especial atención
-        a las carnes al barril.
-      </p>
-
-      <br>
-
-      <p>
-        Trabajamos desde un espacio familiar,
-        preparando cada pedido bajo reserva para
-        ofrecer alimentos frescos y recién preparados.
-      </p>
-
-    </div>
-
-  </section>
-
-
-  <!-- =========================================================
-       PEDIDO
-       ========================================================= -->
-
-  <section
-    id="pedido"
-    style="margin-top:70px;"
-  >
-
-    <div class="section-title">
-
-      <small>
-        Reserva tu pedido
-      </small>
-
-      <h2>
-        Haz tu pedido
-      </h2>
-
-    </div>
-
-
-    <div class="order-layout">
-
-
-      <!-- =====================================================
-           MENU
-           ===================================================== -->
-
-      <div class="panel">
-
-        <div class="panel-title">
-
-          <h3>
-            Menú
-          </h3>
-
-          <span>
-            Sábado 10 de octubre
-          </span>
-
-        </div>
-
-
-        <!-- CARNES -->
-
-        <div class="category-title">
-          Carnes
-        </div>
-
-        <div class="products">
-
-
-          <!-- CHICHARRON -->
-
-          <article class="product">
-
-            <span class="price">
-              $5.50
-            </span>
-
-            <h4>
-              Chicharrón
-            </h4>
-
-            <p class="product-description">
-              200 g + plátano/papas + ensalada
-            </p>
-
-            <div class="product-controls">
-
-              <div class="quantity">
-
-                <button
-                  type="button"
-                  onclick="changeQty('chicharron', -1)"
-                >
-                  −
-                </button>
-
-                <span id="qty-chicharron">
-                  0
-                </span>
-
-                <button
-                  type="button"
-                  onclick="changeQty('chicharron', 1)"
-                >
-                  +
-                </button>
-
-              </div>
-
-              <button
-                type="button"
-                class="add-button"
-                onclick="addProduct('chicharron')"
-              >
-                AGREGAR
-              </button>
-
-            </div>
-
-          </article>
-
-
-          <!-- COSTILLAR -->
-
-          <article class="product">
-
-            <span class="price">
-              $6.50
-            </span>
-
-            <h4>
-              Costillar BBQ
-            </h4>
-
-            <p class="product-description">
-              350 g + plátano/papas + ensalada
-            </p>
-
-            <div class="product-controls">
-
-              <div class="quantity">
-
-                <button
-                  type="button"
-                  onclick="changeQty('costillar', -1)"
-                >
-                  −
-                </button>
-
-                <span id="qty-costillar">
-                  0
-                </span>
-
-                <button
-                  type="button"
-                  onclick="changeQty('costillar', 1)"
-                >
-                  +
-                </button>
-
-              </div>
-
-              <button
-                type="button"
-                class="add-button"
-                onclick="addProduct('costillar')"
-              >
-                AGREGAR
-              </button>
-
-            </div>
-
-          </article>
-
-        </div>
-
-
-        <!-- ACOMPAÑANTES -->
-
-        <div class="category-title">
-          Acompañantes
-        </div>
-
-        <div class="products">
-
-
-          <!-- CHOCLO -->
-
-          <article class="product">
-
-            <span class="price">
-              $1.50
-            </span>
-
-            <h4>
-              Choclo
-            </h4>
-
-            <p class="product-description">
-              Con queso y mayonesa
-            </p>
-
-            <div class="product-controls">
-
-              <div class="quantity">
-
-                <button
-                  type="button"
-                  onclick="changeQty('choclo', -1)"
-                >
-                  −
-                </button>
-
-                <span id="qty-choclo">
-                  0
-                </span>
-
-                <button
-                  type="button"
-                  onclick="changeQty('choclo', 1)"
-                >
-                  +
-                </button>
-
-              </div>
-
-              <button
-                type="button"
-                class="add-button"
-                onclick="addProduct('choclo')"
-              >
-                AGREGAR
-              </button>
-
-            </div>
-
-          </article>
-
-
-          <!-- PLATANOS -->
-
-          <article class="product">
-
-            <span class="price">
-              $2.00
-            </span>
-
-            <h4>
-              Plátanos asados
-            </h4>
-
-            <p class="product-description">
-              Queso, sal prieta o mayonesa de la casa
-            </p>
-
-            <div class="product-controls">
-
-              <div class="quantity">
-
-                <button
-                  type="button"
-                  onclick="changeQty('platanos', -1)"
-                >
-                  −
-                </button>
-
-                <span id="qty-platanos">
-                  0
-                </span>
-
-                <button
-                  type="button"
-                  onclick="changeQty('platanos', 1)"
-                >
-                  +
-                </button>
-
-              </div>
-
-              <button
-                type="button"
-                class="add-button"
-                onclick="addProduct('platanos')"
-              >
-                AGREGAR
-              </button>
-
-            </div>
-
-          </article>
-
-        </div>
-
-
-        <!-- BEBIDAS -->
-
-        <div class="category-title">
-          Bebidas
-        </div>
-
-        <div class="products">
-
-
-          <!-- LIMONADA -->
-
-          <article class="product">
-
-            <span class="price">
-              $5.00
-            </span>
-
-            <h4>
-              Jarra de limonada
-            </h4>
-
-            <p class="product-description">
-              Jarra de limonada
-            </p>
-
-            <div class="product-controls">
-
-              <div class="quantity">
-
-                <button
-                  type="button"
-                  onclick="changeQty('limonada', -1)"
-                >
-                  −
-                </button>
-
-                <span id="qty-limonada">
-                  0
-                </span>
-
-                <button
-                  type="button"
-                  onclick="changeQty('limonada', 1)"
-                >
-                  +
-                </button>
-
-              </div>
-
-              <button
-                type="button"
-                class="add-button"
-                onclick="addProduct('limonada')"
-              >
-                AGREGAR
-              </button>
-
-            </div>
-
-          </article>
-
-
-          <!-- GASEOSA -->
-
-          <article class="product">
-
-            <span class="price">
-              $2.00
-            </span>
-
-            <h4>
-              Gaseosa personal
-            </h4>
-
-            <p class="product-description">
-              Gaseosa personal
-            </p>
-
-            <div class="product-controls">
-
-              <div class="quantity">
-
-                <button
-                  type="button"
-                  onclick="changeQty('gaseosa', -1)"
-                >
-                  −
-                </button>
-
-                <span id="qty-gaseosa">
-                  0
-                </span>
-
-                <button
-                  type="button"
-                  onclick="changeQty('gaseosa', 1)"
-                >
-                  +
-                </button>
-
-              </div>
-
-              <button
-                type="button"
-                class="add-button"
-                onclick="addProduct('gaseosa')"
-              >
-                AGREGAR
-              </button>
-
-            </div>
-
-          </article>
-
-
-          <!-- CAFE -->
-
-          <article class="product">
-
-            <span class="price">
-              $1.00
-            </span>
-
-            <h4>
-              Café lojano
-            </h4>
-
-            <p class="product-description">
-              Café lojano
-            </p>
-
-            <div class="product-controls">
-
-              <div class="quantity">
-
-                <button
-                  type="button"
-                  onclick="changeQty('cafe', -1)"
-                >
-                  −
-                </button>
-
-                <span id="qty-cafe">
-                  0
-                </span>
-
-                <button
-                  type="button"
-                  onclick="changeQty('cafe', 1)"
-                >
-                  +
-                </button>
-
-              </div>
-
-              <button
-                type="button"
-                class="add-button"
-                onclick="addProduct('cafe')"
-              >
-                AGREGAR
-              </button>
-
-            </div>
-
-          </article>
-
-        </div>
-
+      <div class="panel-title">
+        <h3>Menú</h3>
+        <span>Atención continua</span>
       </div>
 
+      <div class="category-title">Carnes</div>
+      <div class="products">
+        <article class="product">
+          <span class="price">$5.50</span>
+          <h4>Chicharrón</h4>
+          <p class="product-description">200 g + plátano/papas + ensalada</p>
+          <div class="product-controls">
+            <div class="quantity">
+              <button type="button" onclick="changeQty('chicharron', -1)">−</button>
+              <span id="qty-chicharron">0</span>
+              <button type="button" onclick="changeQty('chicharron', 1)">+</button>
+            </div>
+            <button type="button" class="add-button" onclick="addProduct('PROD-001', 'Chicharrón', 5.50, 'chicharron')">AGREGAR</button>
+          </div>
+        </article>
 
-      <!-- =====================================================
-           FORMULARIO / CARRITO
-           ===================================================== -->
+        <article class="product">
+          <span class="price">$6.50</span>
+          <h4>Costillar BBQ</h4>
+          <p class="product-description">350 g + plátano/papas + ensalada</p>
+          <div class="product-controls">
+            <div class="quantity">
+              <button type="button" onclick="changeQty('costillar', -1)">−</button>
+              <span id="qty-costillar">0</span>
+              <button type="button" onclick="changeQty('costillar', 1)">+</button>
+            </div>
+            <button type="button" class="add-button" onclick="addProduct('PROD-002', 'Costillar BBQ', 6.50, 'costillar')">AGREGAR</button>
+          </div>
+        </article>
+      </div>
 
-      <div class="panel">
+      <div class="category-title">Acompañantes</div>
+      <div class="products">
+        <article class="product">
+          <span class="price">$1.50</span>
+          <h4>Choclo</h4>
+          <p class="product-description">Con queso y mayonesa</p>
+          <div class="product-controls">
+            <div class="quantity">
+              <button type="button" onclick="changeQty('choclo', -1)">−</button>
+              <span id="qty-choclo">0</span>
+              <button type="button" onclick="changeQty('choclo', 1)">+</button>
+            </div>
+            <button type="button" class="add-button" onclick="addProduct('PROD-003', 'Choclo', 1.50, 'choclo')">AGREGAR</button>
+          </div>
+        </article>
 
-        <div class="panel-title">
+        <article class="product">
+          <span class="price">$2.00</span>
+          <h4>Plátanos asados</h4>
+          <p class="product-description">Queso, sal prieta o mayonesa de la casa</p>
+          <div class="product-controls">
+            <div class="quantity">
+              <button type="button" onclick="changeQty('platanos', -1)">−</button>
+              <span id="qty-platanos">0</span>
+              <button type="button" onclick="changeQty('platanos', 1)">+</button>
+            </div>
+            <button type="button" class="add-button" onclick="addProduct('PROD-004', 'Plátanos asados', 2.00, 'platanos')">AGREGAR</button>
+          </div>
+        </article>
+      </div>
 
-          <h3>
-            Tu pedido
-          </h3>
+      <div class="category-title">Bebidas</div>
+      <div class="products">
+        <article class="product">
+          <span class="price">$5.00</span>
+          <h4>Jarra de limonada</h4>
+          <p class="product-description">Jarra de limonada natural</p>
+          <div class="product-controls">
+            <div class="quantity">
+              <button type="button" onclick="changeQty('limonada', -1)">−</button>
+              <span id="qty-limonada">0</span>
+              <button type="button" onclick="changeQty('limonada', 1)">+</button>
+            </div>
+            <button type="button" class="add-button" onclick="addProduct('PROD-005', 'Jarra de limonada', 5.00, 'limonada')">AGREGAR</button>
+          </div>
+        </article>
 
-          <span>
-            Reserva
-          </span>
+        <article class="product">
+          <span class="price">$2.00</span>
+          <h4>Gaseosa personal</h4>
+          <p class="product-description">Gaseosa personal</p>
+          <div class="product-controls">
+            <div class="quantity">
+              <button type="button" onclick="changeQty('gaseosa', -1)">−</button>
+              <span id="qty-gaseosa">0</span>
+              <button type="button" onclick="changeQty('gaseosa', 1)">+</button>
+            </div>
+            <button type="button" class="add-button" onclick="addProduct('PROD-006', 'Gaseosa personal', 2.00, 'gaseosa')">AGREGAR</button>
+          </div>
+        </article>
+      </div>
+    </div>
 
+    <!-- PANEL DE CARRITO Y FORMULARIO -->
+    <div class="panel">
+      <div class="panel-title">
+        <h3>Tu pedido</h3>
+        <span>Reserva</span>
+      </div>
+
+      <div class="form-group">
+        <label for="customerName">Nombre del cliente <span class="required">*</span></label>
+        <input id="customerName" type="text" placeholder="Ej. Juan Pérez" required>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Número de celular <span class="required">*</span></label>
+        <input id="phone" type="tel" placeholder="0991234567" required>
+      </div>
+
+      <div class="form-group">
+        <label for="orderDate">Fecha del pedido</label>
+        <input id="orderDate" type="date">
+      </div>
+
+      <div class="form-group">
+        <label>Modalidad <span class="required">*</span></label>
+        <div class="delivery-options">
+          <div class="delivery-option">
+            <input type="radio" id="takeaway" name="delivery" value="Para llevar" onchange="toggleDelivery(false)">
+            <label for="takeaway">Para llevar</label>
+          </div>
+          <div class="delivery-option">
+            <input type="radio" id="local" name="delivery" value="En el local" checked onchange="toggleDelivery(false)">
+            <label for="local">En el local</label>
+          </div>
+          <div class="delivery-option">
+            <input type="radio" id="delivery" name="delivery" value="A domicilio" onchange="toggleDelivery(true)">
+            <label for="delivery">A domicilio</label>
+          </div>
         </div>
+      </div>
 
-
-        <!-- DATOS CLIENTE -->
-
+      <div id="deliveryBox">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <strong>Ubicación de entrega</strong>
+          <button type="button" class="location-button" onclick="getLocation()">USAR MI UBICACIÓN</button>
+        </div>
+        <div id="map"></div>
         <div class="form-group">
-
-          <label for="customerName">
-            Nombre del cliente
-            <span class="required">*</span>
-          </label>
-
-          <input
-            id="customerName"
-            type="text"
-            placeholder="Ej. Juan Pérez"
-            autocomplete="name"
-            required
-          >
-
+          <label for="sector">Sector</label>
+          <input id="sector" type="text" value="Sector norte">
         </div>
-
-
         <div class="form-group">
-
-          <label for="phone">
-            Número de celular
-            <span class="required">*</span>
-          </label>
-
-          <input
-            id="phone"
-            type="tel"
-            placeholder="0991234567"
-            autocomplete="tel"
-            required
-          >
-
+          <label for="address">Dirección <span class="required">*</span></label>
+          <input id="address" type="text" placeholder="Calle principal y secundaria">
         </div>
-
-
-        <!-- FECHA -->
-
         <div class="form-group">
-
-          <label for="orderDate">
-            Fecha del pedido
-          </label>
-
-          <input
-            id="orderDate"
-            type="date"
-            value="2026-10-10"
-          >
-
+          <label for="reference">Referencia</label>
+          <textarea id="reference" placeholder="Ej. Casa blanca junto al parque..."></textarea>
         </div>
-
-
-        <!-- MODALIDAD -->
-
-        <div class="form-group">
-
-          <label>
-            Modalidad
-            <span class="required">*</span>
-          </label>
-
-          <div class="delivery-options">
-
-
-            <div class="delivery-option">
-
-              <input
-                type="radio"
-                id="takeaway"
-                name="delivery"
-                value="Para llevar"
-              >
-
-              <label for="takeaway">
-                Para llevar
-              </label>
-
-            </div>
-
-
-            <div class="delivery-option">
-
-              <input
-                type="radio"
-                id="local"
-                name="delivery"
-                value="En el local"
-                checked
-              >
-
-              <label for="local">
-                En el local
-              </label>
-
-            </div>
-
-
-            <div class="delivery-option">
-
-              <input
-                type="radio"
-                id="delivery"
-                name="delivery"
-                value="A domicilio"
-              >
-
-              <label for="delivery">
-                A domicilio
-              </label>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <!-- ===================================================
-             DOMICILIO + MAPA
-             =================================================== -->
-
-        <div id="deliveryBox">
-
-          <div class="map-header">
-
-            <strong>
-              Ubicación de entrega
-            </strong>
-
-            <button
-              type="button"
-              class="location-button"
-              onclick="getLocation()"
-            >
-              USAR MI UBICACIÓN
-            </button>
-
-          </div>
-
-          <div
-            id="map"
-          ></div>
-
-          <div
-            id="mapStatus"
-            class="map-status"
-          >
-            Puedes mover el marcador para ajustar
-            exactamente el lugar de entrega.
-          </div>
-
-
-          <div class="form-group">
-
-            <label for="sector">
-              Sector
-            </label>
-
-            <input
-              id="sector"
-              type="text"
-              value="Sector norte"
-            >
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label for="address">
-              Dirección
-              <span class="required">*</span>
-            </label>
-
-            <input
-              id="address"
-              type="text"
-              placeholder="Calle principal, número y calle secundaria"
-            >
-
-          </div>
-
-
-          <div class="form-group">
-
-            <label for="reference">
-              Referencia
-            </label>
-
-            <textarea
-              id="reference"
-              placeholder="Ej. Casa blanca, junto al parque..."
-            ></textarea>
-
-          </div>
-
-        </div>
-
-
-        <!-- ===================================================
-             CARRITO
-             =================================================== -->
-
-        <div
-          class="category-title"
-          style="margin-top:25px;"
-        >
-          Productos seleccionados
-        </div>
-
-        <div id="cart">
-
-          <div class="cart-empty">
-            Todavía no has agregado productos.
-          </div>
-
-        </div>
-
-
-        <!-- ===================================================
-             TOTALES
-             =================================================== -->
-
-        <div class="totals">
-
-          <div class="total-row">
-
-            <span>
-              Subtotal
-            </span>
-
-            <strong id="subtotal">
-              $0.00
-            </strong>
-
-          </div>
-
-
-          <div class="total-row">
-
-            <span>
-              Envío
-            </span>
-
-            <strong id="deliveryFee">
-              $0.00
-            </strong>
-
-          </div>
-
-
-          <div class="total-row final">
-
-            <span>
-              TOTAL
-            </span>
-
-            <strong id="total">
-              $0.00
-            </strong>
-
-          </div>
-
-        </div>
-
-
-        <!-- ===================================================
-             PAGO
-             =================================================== -->
-
-        <div
-          class="category-title"
-          style="margin-top:25px;"
-        >
-          Forma de pago
-        </div>
-
-        <div class="payment-options">
-
-
-          <div class="payment-option">
-
-            <input
-              id="cash"
-              type="radio"
-              name="payment"
-              value="Efectivo"
-              checked
-            >
-
-            <label for="cash">
-              Efectivo
-            </label>
-
-          </div>
-
-
-          <div class="payment-option">
-
-            <input
-              id="transfer"
-              type="radio"
-              name="payment"
-              value="Transferencia"
-            >
-
-            <label for="transfer">
-              Transferencia
-            </label>
-
-          </div>
-
-        </div>
-
-
-        <!-- ===================================================
-             PROMOCIONES
-             =================================================== -->
-
-        <label class="checkbox-line">
-
-          <input
-            id="marketingConsent"
-            type="checkbox"
-          >
-
-          <span>
-            Acepto recibir promociones y novedades
-            de EL BARRIL DEL PROFE mediante mi
-            número de celular.
-          </span>
-
-        </label>
-
-
-        <!-- ===================================================
-             OBSERVACIONES
-             =================================================== -->
-
-        <div
-          class="form-group"
-          style="margin-top:18px;"
-        >
-
-          <label for="notes">
-            Observaciones del pedido
-          </label>
-
-          <textarea
-            id="notes"
-            placeholder="Alguna indicación adicional..."
-          ></textarea>
-
-        </div>
-
-
-        <!-- ===================================================
-             BOTON
-             =================================================== -->
-
-        <button
-          id="submitButton"
-          type="button"
-          class="submit-button"
-          onclick="submitOrder()"
-        >
-          RESERVAR Y ENVIAR A WHATSAPP
-        </button>
-
       </div>
 
-    </div>
-
-
-    <!-- =======================================================
-         INFORMACIÓN
-         ======================================================= -->
-
-    <div class="info-grid">
-
-      <div class="info-card">
-
-        <strong>
-          Fecha
-        </strong>
-
-        <span>
-          Sábado 10 de octubre de 2026
-        </span>
-
+      <div class="category-title">Productos seleccionados</div>
+      <div id="cart">
+        <div class="cart-empty">Todavía no has agregado productos.</div>
       </div>
 
-
-      <div class="info-card">
-
-        <strong>
-          Atención
-        </strong>
-
-        <span>
-          Desde las 11:00
-        </span>
-
+      <div class="totals">
+        <div class="total-row"><span>Subtotal</span><strong id="subtotal">$0.00</strong></div>
+        <div class="total-row"><span>Envío</span><strong id="deliveryFee">$0.00</strong></div>
+        <div class="total-row final"><span>TOTAL</span><strong id="total">$0.00</strong></div>
       </div>
 
-
-      <div class="info-card">
-
-        <strong>
-          Pedidos
-        </strong>
-
-        <span>
-          0992506756
-        </span>
-
+      <div class="category-title">Forma de pago</div>
+      <div class="payment-options">
+        <div class="payment-option">
+          <input id="cash" type="radio" name="payment" value="Efectivo" checked>
+          <label for="cash">Efectivo</label>
+        </div>
+        <div class="payment-option">
+          <input id="transfer" type="radio" name="payment" value="Transferencia">
+          <label for="transfer">Transferencia</label>
+        </div>
       </div>
 
+      <label class="checkbox-line">
+        <input id="marketingConsent" type="checkbox" checked>
+        <span>Acepto recibir promociones y novedades de EL BARRIL DEL PROFE mediante mi número de celular.</span>
+      </label>
+
+      <div class="form-group" style="margin-top:15px;">
+        <label for="notes">Observaciones del pedido</label>
+        <textarea id="notes" placeholder="Cubiertos, salsas, etc."></textarea>
+      </div>
+
+      <button id="submitButton" type="button" class="submit-button" onclick="submitOrder()">RESERVAR Y ENVIAR A WHATSAPP</button>
     </div>
-
-  </section>
-
-</main>
-
-
-<!-- ===========================================================
-     FOOTER
-     =========================================================== -->
-
-<footer id="contactos">
-
-  <div class="footer-inner">
-
-    <div>
-
-      <strong>
-        EL BARRIL DEL PROFE
-      </strong>
-
-      <p>
-        Carnes al Barril
-      </p>
-
-      <p>
-        Teléfono:
-        <a
-          class="footer-link"
-          href="tel:+593992506756"
-        >
-          0992506756
-        </a>
-      </p>
-
-    </div>
-
-
-    <div>
-
-      <strong>
-        Ubicación
-      </strong>
-
-      <p>
-
-        <a
-          class="footer-link"
-          href="https://goo.gl/maps/X1CpR3tm2MZANC4r8"
-          target="_blank"
-          rel="noopener"
-        >
-          Ver ubicación en Google Maps
-        </a>
-
-      </p>
-
-      <p>
-        Todos los derechos reservados 2026
-      </p>
-
-      <p>
-        Sitio web desarrollado por
-        Ortíz Comunicaciones
-      </p>
-
-    </div>
-
   </div>
 
-</footer>
-
-
-<!-- ===========================================================
-     MODAL
-     =========================================================== -->
-
-<div
-  id="successModal"
-  class="modal"
->
-
-  <div class="modal-card">
-
-    <div class="modal-icon">
-      ✓
+  <!-- MODAL DE ADMINISTRACIÓN -->
+  <div id="adminModal" class="modal">
+    <div class="modal-content">
+      <h3 style="color:var(--accent);">Panel de Administración</h3>
+      <div id="adminAuth">
+        <p style="margin: 15px 0; font-size:0.9rem;">Ingresa la clave de acceso:</p>
+        <input type="password" id="adminPass" placeholder="Clave de acceso" style="width:100%; padding:10px; background:#111; border:1px solid var(--border); color:white; border-radius:4px; margin-bottom:15px;">
+        <button onclick="loginAdmin()" style="background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:4px; cursor:pointer;">INGRESAR</button>
+      </div>
+      <div id="adminPanel" style="display:none;">
+        <p style="margin-bottom:10px; font-size:0.85rem; color:var(--text-muted);">Gestión de Reservas y Pedidos:</p>
+        <div style="overflow-x:auto;">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Teléfono</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="adminTableBody">
+              <!-- Cargado dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeAdminModal()">CERRAR</button>
     </div>
-
-    <h3>
-      Pedido recibido
-    </h3>
-
-    <p>
-      Tu pedido ha sido enviado.
-      Ahora puedes confirmar los detalles
-      directamente por WhatsApp.
-    </p>
-
-    <button
-      class="modal-close"
-      onclick="closeModal()"
-    >
-      CERRAR
-    </button>
-
   </div>
 
-</div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHHGCa_vOmYZCdnqnGt4BoGro9SHv5t9HjmRDNXTjix5pSpYHzn5ncvFkIeEI7TbGJ/exec";
+    
+    let cart = {};
+    let quantities = { chicharron: 0, costillar: 0, choclo: 0, platanos: 0, limonada: 0, gaseosa: 0 };
+    let map, marker;
+    let userLat = -0.149919, userLng = -78.491181;
 
+    document.getElementById('orderDate').valueAsDate = new Date();
 
-<!-- ===========================================================
-     LEAFLET
-     =========================================================== -->
-
-<script
-  src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-></script>
-
-
-<script>
-
-  /* ==========================================================
-     CONFIGURACIÓN PRINCIPAL
-     ========================================================== */
-
-  const API_URL =
-    "https://script.google.com/macros/s/AKfycbxHHGCa_vOmYZCdnqnGt4BoGro9SHv5t9HjmRDNXTjix5pSpYHzn5ncvFkIeEI7TbGJ/exec";
-
-
-  const BUSINESS_NAME =
-    "EL BARRIL DEL PROFE";
-
-
-  const WHATSAPP =
-    "593992506756";
-
-
-  const ORDER_DATE =
-    "2026-10-10";
-
-
-  /*
-   * IMPORTANTE:
-   *
-   * Estos IDs deben coincidir con los IDs de PRODUCTOS
-   * creados por el setup() de Apps Script.
-   *
-   * Si tu hoja tiene IDs diferentes, cambia únicamente
-   * los valores de "id".
-   */
-
-  const PRODUCTS = {
-
-    chicharron: {
-      id: "CHICHARRON",
-      name: "Chicharrón",
-      price: 5.50
-    },
-
-    costillar: {
-      id: "COSTILLAR_BBQ",
-      name: "Costillar BBQ",
-      price: 6.50
-    },
-
-    choclo: {
-      id: "CHOCLO",
-      name: "Choclo",
-      price: 1.50
-    },
-
-    platanos: {
-      id: "PLATANOS_ASADOS",
-      name: "Plátanos asados",
-      price: 2.00
-    },
-
-    limonada: {
-      id: "JARRA_LIMONADA",
-      name: "Jarra de limonada",
-      price: 5.00
-    },
-
-    gaseosa: {
-      id: "GASEOSA_PERSONAL",
-      name: "Gaseosa personal",
-      price: 2.00
-    },
-
-    cafe: {
-      id: "CAFE_LOJANO",
-      name: "Café lojano",
-      price: 1.00
+    function changeQty(key, delta) {
+      quantities[key] = Math.max(0, (quantities[key] || 0) + delta);
+      document.getElementById('qty-' + key).innerText = quantities[key];
     }
 
-  };
-
-
-  /*
-   * Carrito:
-   *
-   * key = identificador visual
-   * quantity = cantidad
-   */
-
-  const cart = {};
-
-
-  /* ==========================================================
-     MAPA
-     ========================================================== */
-
-  let map = null;
-
-  let marker = null;
-
-  let latitude = null;
-
-  let longitude = null;
-
-
-  /*
-   * Centro inicial aproximado en Quito.
-   *
-   * El usuario podrá mover el marcador.
-   */
-
-  const DEFAULT_MAP_CENTER =
-    [-0.1807, -78.4678];
-
-
-  function initializeMap() {
-
-    if (map) {
-      return;
-    }
-
-    map = L.map("map");
-
-    L.tileLayer(
-      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-      {
-        maxZoom: 19,
-        attribution:
-          "&copy; OpenStreetMap contributors"
+    function addProduct(id, name, price, key) {
+      const qty = quantities[key];
+      if (qty <= 0) {
+        alert('Selecciona una cantidad mayor a 0');
+        return;
       }
-    ).addTo(map);
-
-
-    map.setView(
-      DEFAULT_MAP_CENTER,
-      13
-    );
-
-
-    marker = L.marker(
-      DEFAULT_MAP_CENTER,
-      {
-        draggable: true
-      }
-    ).addTo(map);
-
-
-    latitude =
-      DEFAULT_MAP_CENTER[0];
-
-    longitude =
-      DEFAULT_MAP_CENTER[1];
-
-
-    marker.on(
-      "dragend",
-      function () {
-
-        const position =
-          marker.getLatLng();
-
-        latitude =
-          position.lat;
-
-        longitude =
-          position.lng;
-
-        updateMapStatus(
-          "Ubicación actualizada correctamente."
-        );
-
-      }
-    );
-
-  }
-
-
-  function updateMapStatus(message) {
-
-    const status =
-      document.getElementById(
-        "mapStatus"
-      );
-
-    status.textContent =
-      message;
-
-  }
-
-
-  function getLocation() {
-
-    if (!navigator.geolocation) {
-
-      updateMapStatus(
-        "Tu navegador no permite obtener la ubicación automáticamente."
-      );
-
-      return;
-    }
-
-
-    updateMapStatus(
-      "Obteniendo tu ubicación..."
-    );
-
-
-    navigator.geolocation.getCurrentPosition(
-
-      function(position) {
-
-        latitude =
-          position.coords.latitude;
-
-        longitude =
-          position.coords.longitude;
-
-
-        if (!map) {
-          initializeMap();
-        }
-
-
-        map.setView(
-          [latitude, longitude],
-          17
-        );
-
-
-        marker.setLatLng(
-          [latitude, longitude]
-        );
-
-
-        updateMapStatus(
-          "Ubicación encontrada. Puedes mover el marcador si es necesario."
-        );
-
-      },
-
-
-      function(error) {
-
-        console.error(error);
-
-        updateMapStatus(
-          "No fue posible obtener la ubicación. Puedes mover el marcador manualmente."
-        );
-
-      },
-
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0
-      }
-
-    );
-
-  }
-
-
-  /* ==========================================================
-     MOSTRAR / OCULTAR DOMICILIO
-     ========================================================== */
-
-  function updateDeliveryVisibility() {
-
-    const selected =
-      document.querySelector(
-        'input[name="delivery"]:checked'
-      );
-
-
-    const box =
-      document.getElementById(
-        "deliveryBox"
-      );
-
-
-    if (
-      selected &&
-      selected.value === "A domicilio"
-    ) {
-
-      box.classList.add(
-        "visible"
-      );
-
-
-      setTimeout(
-        function() {
-
-          initializeMap();
-
-          if (map) {
-            map.invalidateSize();
-          }
-
-        },
-        100
-      );
-
-    } else {
-
-      box.classList.remove(
-        "visible"
-      );
-
-    }
-
-
-    updateTotals();
-
-  }
-
-
-  document
-    .querySelectorAll(
-      'input[name="delivery"]'
-    )
-    .forEach(
-      function(input) {
-
-        input.addEventListener(
-          "change",
-          updateDeliveryVisibility
-        );
-
-      }
-    );
-
-
-  /* ==========================================================
-     CANTIDADES
-     ========================================================== */
-
-  function changeQty(
-    key,
-    amount
-  ) {
-
-    if (!cart[key]) {
-      cart[key] = 0;
-    }
-
-
-    cart[key] += amount;
-
-
-    if (cart[key] < 0) {
-      cart[key] = 0;
-    }
-
-
-    document.getElementById(
-      "qty-" + key
-    ).textContent =
-      cart[key];
-
-  }
-
-
-  /* ==========================================================
-     AGREGAR PRODUCTO
-     ========================================================== */
-
-  function addProduct(key) {
-
-    const product =
-      PRODUCTS[key];
-
-
-    if (!product) {
-      return;
-    }
-
-
-    const quantity =
-      cart[key] || 0;
-
-
-    if (quantity <= 0) {
-
-      alert(
-        "Selecciona al menos una unidad de " +
-        product.name +
-        "."
-      );
-
-      return;
-    }
-
-
-    renderCart();
-
-  }
-
-
-  /* ==========================================================
-     RENDER CARRITO
-     ========================================================== */
-
-  function renderCart() {
-
-    const container =
-      document.getElementById(
-        "cart"
-      );
-
-
-    const selected =
-      Object.keys(cart)
-        .filter(
-          key =>
-            cart[key] > 0
-        );
-
-
-    if (
-      selected.length === 0
-    ) {
-
-      container.innerHTML = `
-        <div class="cart-empty">
-          Todavía no has agregado productos.
-        </div>
-      `;
-
-      updateTotals();
-
-      return;
-    }
-
-
-    container.innerHTML =
-      selected
-        .map(
-          function(key) {
-
-            const product =
-              PRODUCTS[key];
-
-            const quantity =
-              cart[key];
-
-            const total =
-              product.price *
-              quantity;
-
-
-            return `
-
-              <div class="cart-item">
-
-                <div>
-
-                  <div class="cart-item-name">
-                    ${escapeHTML(product.name)}
-                  </div>
-
-                  <div class="cart-item-detail">
-                    ${quantity} ×
-                    ${formatMoney(product.price)}
-                  </div>
-
-                  <button
-                    type="button"
-                    class="cart-remove"
-                    onclick="removeProduct('${key}')"
-                  >
-                    Quitar
-                  </button>
-
-                </div>
-
-                <div class="cart-item-price">
-                  ${formatMoney(total)}
-                </div>
-
-              </div>
-
-            `;
-
-          }
-        )
-        .join("");
-
-
-    updateTotals();
-
-  }
-
-
-  function removeProduct(key) {
-
-    cart[key] = 0;
-
-
-    const counter =
-      document.getElementById(
-        "qty-" + key
-      );
-
-
-    if (counter) {
-      counter.textContent = "0";
-    }
-
-
-    renderCart();
-
-  }
-
-
-  /* ==========================================================
-     TOTALES
-     ========================================================== */
-
-  function calculateSubtotal() {
-
-    return Object.keys(cart)
-      .reduce(
-        function(total, key) {
-
-          const quantity =
-            cart[key] || 0;
-
-          const product =
-            PRODUCTS[key];
-
-
-          if (!product) {
-            return total;
-          }
-
-
-          return total +
-            product.price *
-            quantity;
-
-        },
-        0
-      );
-
-  }
-
-
-  function updateTotals() {
-
-    const subtotal =
-      calculateSubtotal();
-
-
-    const deliverySelected =
-      document.querySelector(
-        'input[name="delivery"]:checked'
-      );
-
-
-    let deliveryFee = 0;
-
-
-    /*
-     * El backend actualmente tiene
-     * DEFAULT_DELIVERY_FEE = 0.
-     */
-
-    if (
-      deliverySelected &&
-      deliverySelected.value === "A domicilio"
-    ) {
-
-      deliveryFee = 0;
-
-    }
-
-
-    document.getElementById(
-      "subtotal"
-    ).textContent =
-      formatMoney(subtotal);
-
-
-    document.getElementById(
-      "deliveryFee"
-    ).textContent =
-      formatMoney(deliveryFee);
-
-
-    document.getElementById(
-      "total"
-    ).textContent =
-      formatMoney(
-        subtotal +
-        deliveryFee
-      );
-
-  }
-
-
-  /* ==========================================================
-     FORMATO
-     ========================================================== */
-
-  function formatMoney(value) {
-
-    return "$" +
-      Number(value)
-        .toFixed(2);
-
-  }
-
-
-  function escapeHTML(value) {
-
-    return String(value)
-      .replace(
-        /[&<>"']/g,
-        function(char) {
-
-          const map = {
-
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            '"': "&quot;",
-            "'": "&#039;"
-
-          };
-
-          return map[char];
-
-        }
-      );
-
-  }
-
-
-  /* ==========================================================
-     NORMALIZAR CELULAR
-     ========================================================== */
-
-  function normalizePhone(
-    value
-  ) {
-
-    let phone =
-      value
-        .replace(
-          /[^\d+]/g,
-          ""
-        );
-
-
-    if (
-      phone.startsWith("09") &&
-      phone.length === 10
-    ) {
-
-      return (
-        "593" +
-        phone.substring(1)
-      );
-
-    }
-
-
-    if (
-      phone.startsWith("+593")
-    ) {
-
-      return phone.substring(1);
-
-    }
-
-
-    return phone;
-
-  }
-
-
-  /* ==========================================================
-     VALIDACIÓN CELULAR
-     ========================================================== */
-
-  function validPhone(
-    phone
-  ) {
-
-    return /^5939\d{8}$/
-      .test(phone);
-
-  }
-
-
-  /* ==========================================================
-     CONSTRUIR PEDIDO
-     ========================================================== */
-
-  function buildOrder() {
-
-    const customerName =
-      document.getElementById(
-        "customerName"
-      ).value.trim();
-
-
-    const rawPhone =
-      document.getElementById(
-        "phone"
-      ).value.trim();
-
-
-    const phone =
-      normalizePhone(
-        rawPhone
-      );
-
-
-    const date =
-      document.getElementById(
-        "orderDate"
-      ).value;
-
-
-    const delivery =
-      document.querySelector(
-        'input[name="delivery"]:checked'
-      );
-
-
-    const payment =
-      document.querySelector(
-        'input[name="payment"]:checked'
-      );
-
-
-    const marketingConsent =
-      document.getElementById(
-        "marketingConsent"
-      ).checked;
-
-
-    const notes =
-      document.getElementById(
-        "notes"
-      ).value.trim();
-
-
-    if (!customerName) {
-
-      alert(
-        "Ingresa el nombre del cliente."
-      );
-
-      return null;
-
-    }
-
-
-    if (
-      !validPhone(phone)
-    ) {
-
-      alert(
-        "Ingresa un número celular ecuatoriano válido. Ejemplo: 0991234567"
-      );
-
-      return null;
-
-    }
-
-
-    if (!date) {
-
-      alert(
-        "Selecciona la fecha del pedido."
-      );
-
-      return null;
-
-    }
-
-
-    if (!delivery) {
-
-      alert(
-        "Selecciona la modalidad del pedido."
-      );
-
-      return null;
-
-    }
-
-
-    if (!payment) {
-
-      alert(
-        "Selecciona la forma de pago."
-      );
-
-      return null;
-
-    }
-
-
-    const items =
-      Object.keys(cart)
-        .filter(
-          key =>
-            cart[key] > 0
-        )
-        .map(
-          function(key) {
-
-            return {
-
-              id:
-                PRODUCTS[key].id,
-
-              quantity:
-                cart[key]
-
-            };
-
-          }
-        );
-
-
-    if (
-      items.length === 0
-    ) {
-
-      alert(
-        "Agrega al menos un producto al pedido."
-      );
-
-      return null;
-
-    }
-
-
-    let sector = "";
-    let address = "";
-    let reference = "";
-
-
-    if (
-      delivery.value ===
-      "A domicilio"
-    ) {
-
-      sector =
-        document.getElementById(
-          "sector"
-        ).value.trim();
-
-
-      address =
-        document.getElementById(
-          "address"
-        ).value.trim();
-
-
-      reference =
-        document.getElementById(
-          "reference"
-        ).value.trim();
-
-
-      if (!address) {
-
-        alert(
-          "Ingresa la dirección de entrega."
-        );
-
-        return null;
-
-      }
-
-
-      if (
-        latitude === null ||
-        longitude === null
-      ) {
-
-        alert(
-          "Confirma la ubicación en el mapa antes de continuar."
-        );
-
-        return null;
-
-      }
-
-    }
-
-
-    return {
-
-      action:
-        "createReservation",
-
-      customerName:
-        customerName,
-
-      phone:
-        phone,
-
-      date:
-        date,
-
-      delivery:
-        delivery.value,
-
-      payment:
-        payment.value,
-
-      items:
-        items,
-
-      sector:
-        sector,
-
-      address:
-        address,
-
-      latitude:
-        latitude,
-
-      longitude:
-        longitude,
-
-      reference:
-        reference,
-
-      notes:
-        notes,
-
-      marketingConsent:
-        marketingConsent
-
-    };
-
-  }
-
-
-  /* ==========================================================
-     ENVIAR PEDIDO
-     ========================================================== */
-
-  async function submitOrder() {
-
-    const order =
-      buildOrder();
-
-
-    if (!order) {
-      return;
-    }
-
-
-    const button =
-      document.getElementById(
-        "submitButton"
-      );
-
-
-    button.disabled = true;
-
-    button.textContent =
-      "ENVIANDO PEDIDO...";
-
-
-    try {
-
-      /*
-       * IMPORTANTE:
-       *
-       * Se utiliza text/plain en lugar de
-       * application/json para evitar un
-       * preflight CORS desde GitHub Pages.
-       *
-       * Apps Script recibe igualmente el
-       * contenido mediante:
-       *
-       * e.postData.contents
-       */
-
-      await fetch(
-        API_URL,
-        {
-          method: "POST",
-
-          mode: "no-cors",
-
-          headers: {
-            "Content-Type":
-              "text/plain;charset=UTF-8"
-          },
-
-          body:
-            JSON.stringify(order)
-        }
-      );
-
-
-      /*
-       * Creamos el mensaje para WhatsApp.
-       */
-
-      const message =
-        createWhatsAppMessage(
-          order
-        );
-
-
-      const whatsappURL =
-        "https://wa.me/" +
-        WHATSAPP +
-        "?text=" +
-        encodeURIComponent(
-          message
-        );
-
-
-      /*
-       * Mostramos confirmación.
-       */
-
-      document
-        .getElementById(
-          "successModal"
-        )
-        .classList
-        .add(
-          "visible"
-        );
-
-
-      /*
-       * Abrimos WhatsApp.
-       */
-
-      setTimeout(
-        function() {
-
-          window.open(
-            whatsappURL,
-            "_blank"
-          );
-
-        },
-        500
-      );
-
-
-      resetOrder();
-
-
-    } catch (error) {
-
-      console.error(error);
-
-
-      alert(
-        "No se pudo enviar el pedido. Revisa tu conexión e inténtalo nuevamente."
-      );
-
-    } finally {
-
-      button.disabled = false;
-
-      button.textContent =
-        "RESERVAR Y ENVIAR A WHATSAPP";
-
-    }
-
-  }
-
-
-  /* ==========================================================
-     MENSAJE WHATSAPP
-     ========================================================== */
-
-  function createWhatsAppMessage(
-    order
-  ) {
-
-    const lines = [];
-
-
-    lines.push(
-      "NUEVO PEDIDO - EL BARRIL DEL PROFE"
-    );
-
-    lines.push(
-      ""
-    );
-
-    lines.push(
-      "Cliente: " +
-      order.customerName
-    );
-
-    lines.push(
-      "Celular: " +
-      order.phone
-    );
-
-    lines.push(
-      "Fecha: " +
-      order.date
-    );
-
-    lines.push(
-      "Modalidad: " +
-      order.delivery
-    );
-
-    lines.push(
-      "Pago: " +
-      order.payment
-    );
-
-
-    lines.push(
-      ""
-    );
-
-    lines.push(
-      "PRODUCTOS:"
-    );
-
-
-    order.items.forEach(
-      function(item) {
-
-        const product =
-          Object.values(
-            PRODUCTS
-          ).find(
-            p =>
-              p.id === item.id
-          );
-
-
-        if (product) {
-
-          lines.push(
-            item.quantity +
-            " x " +
-            product.name +
-            " - " +
-            formatMoney(
-              product.price *
-              item.quantity
-            )
-          );
-
-        }
-
-      }
-    );
-
-
-    if (
-      order.delivery ===
-      "A domicilio"
-    ) {
-
-      lines.push(
-        ""
-      );
-
-      lines.push(
-        "SECTOR: " +
-        order.sector
-      );
-
-      lines.push(
-        "DIRECCIÓN: " +
-        order.address
-      );
-
-
-      if (order.reference) {
-
-        lines.push(
-          "REFERENCIA: " +
-          order.reference
-        );
-
-      }
-
-
-      if (
-        order.latitude !== null &&
-        order.longitude !== null
-      ) {
-
-        lines.push(
-          "UBICACIÓN: https://www.google.com/maps?q=" +
-          order.latitude +
-          "," +
-          order.longitude
-        );
-
-      }
-
-    }
-
-
-    if (order.notes) {
-
-      lines.push(
-        ""
-      );
-
-      lines.push(
-        "OBSERVACIONES: " +
-        order.notes
-      );
-
-    }
-
-
-    lines.push(
-      ""
-    );
-
-    lines.push(
-      "El pedido fue registrado desde el sitio web."
-    );
-
-
-    return lines.join(
-      "\n"
-    );
-
-  }
-
-
-  /* ==========================================================
-     RESET
-     ========================================================== */
-
-  function resetOrder() {
-
-    Object.keys(cart)
-      .forEach(
-        function(key) {
-
-          cart[key] = 0;
-
-
-          const element =
-            document.getElementById(
-              "qty-" + key
-            );
-
-
-          if (element) {
-            element.textContent =
-              "0";
-          }
-
-        }
-      );
-
-
-    renderCart();
-
-
-    document.getElementById(
-      "customerName"
-    ).value = "";
-
-
-    document.getElementById(
-      "phone"
-    ).value = "";
-
-
-    document.getElementById(
-      "address"
-    ).value = "";
-
-
-    document.getElementById(
-      "reference"
-    ).value = "";
-
-
-    document.getElementById(
-      "notes"
-    ).value = "";
-
-
-    document.getElementById(
-      "marketingConsent"
-    ).checked = false;
-
-
-    /*
-     * Dejamos la fecha del evento.
-     */
-
-    document.getElementById(
-      "orderDate"
-    ).value =
-      ORDER_DATE;
-
-
-    /*
-     * Volvemos a "En el local".
-     */
-
-    document.getElementById(
-      "local"
-    ).checked = true;
-
-
-    updateDeliveryVisibility();
-
-  }
-
-
-  /* ==========================================================
-     MODAL
-     ========================================================== */
-
-  function closeModal() {
-
-    document
-      .getElementById(
-        "successModal"
-      )
-      .classList
-      .remove(
-        "visible"
-      );
-
-  }
-
-
-  /* ==========================================================
-     INICIO
-     ========================================================== */
-
-  document.addEventListener(
-    "DOMContentLoaded",
-    function() {
-
-      document.getElementById(
-        "orderDate"
-      ).value =
-        ORDER_DATE;
-
-
+      cart[id] = { id, name, price, qty };
       renderCart();
-
-
-      updateDeliveryVisibility();
-
-
-      /*
-       * Evita seleccionar fechas anteriores
-       * al evento.
-       */
-
-      document.getElementById(
-        "orderDate"
-      ).min =
-        ORDER_DATE;
-
     }
-  );
 
+    function renderCart() {
+      const cartDiv = document.getElementById('cart');
+      const keys = Object.keys(cart);
+      if (keys.length === 0) {
+        cartDiv.innerHTML = '<div class="cart-empty">Todavía no has agregado productos.</div>';
+        updateTotals(0);
+        return;
+      }
 
-</script>
+      let html = '';
+      let subtotal = 0;
+      keys.forEach(k => {
+        const item = cart[k];
+        const itemTotal = item.price * item.qty;
+        subtotal += itemTotal;
+        html += `
+          <div class="cart-item">
+            <span>${item.qty} x ${item.name}</span>
+            <span>$${itemTotal.toFixed(2)}</span>
+          </div>
+        `;
+      });
+      cartDiv.innerHTML = html;
+      updateTotals(subtotal);
+    }
 
+    function updateTotals(subtotal) {
+      const isDelivery = document.getElementById('delivery').checked;
+      const deliveryFee = isDelivery ? 1.50 : 0.00;
+      const total = subtotal + deliveryFee;
+
+      document.getElementById('subtotal').innerText = '$' + subtotal.toFixed(2);
+      document.getElementById('deliveryFee').innerText = '$' + deliveryFee.toFixed(2);
+      document.getElementById('total').innerText = '$' + total.toFixed(2);
+    }
+
+    function toggleDelivery(showMap) {
+      document.getElementById('deliveryBox').style.display = showMap ? 'block' : 'none';
+      if (showMap && !map) {
+        initMap();
+      }
+      renderCart();
+    }
+
+    function initMap() {
+      map = L.map('map').setView([userLat, userLng], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap'
+      }).addTo(map);
+
+      marker = L.marker([userLat, userLng], { draggable: true }).addTo(map);
+      marker.on('dragend', function(e) {
+        const pos = marker.getLatLng();
+        userLat = pos.lat;
+        userLng = pos.lng;
+      });
+    }
+
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+          userLat = pos.coords.latitude;
+          userLng = pos.coords.longitude;
+          if (map) {
+            map.setView([userLat, userLng], 15);
+            marker.setLatLng([userLat, userLng]);
+          }
+        });
+      }
+    }
+
+    function submitOrder() {
+      const name = document.getElementById('customerName').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const itemsKeys = Object.keys(cart);
+
+      if (!name || !phone) {
+        alert('Por favor, completa tu nombre y celular.');
+        return;
+      }
+      if (itemsKeys.length === 0) {
+        alert('Agrega al menos un producto a tu pedido.');
+        return;
+      }
+
+      const isDelivery = document.getElementById('delivery').checked;
+      const subtotal = itemsKeys.reduce((acc, k) => acc + (cart[k].price * cart[k].qty), 0);
+      const deliveryFee = isDelivery ? 1.50 : 0.00;
+      const total = subtotal + deliveryFee;
+
+      const payload = {
+        customerName: name,
+        phone: phone,
+        orderDate: document.getElementById('orderDate').value,
+        deliveryMode: document.querySelector('input[name="delivery"]:checked').value,
+        sector: isDelivery ? document.getElementById('sector').value : '',
+        address: isDelivery ? document.getElementById('address').value : '',
+        reference: isDelivery ? document.getElementById('reference').value : '',
+        lat: isDelivery ? userLat : '',
+        lng: isDelivery ? userLng : '',
+        items: itemsKeys.map(k => cart[k]),
+        subtotal: subtotal,
+        deliveryFee: deliveryFee,
+        total: total,
+        paymentMethod: document.querySelector('input[name="payment"]:checked').value,
+        marketing: document.getElementById('marketingConsent').checked,
+        notes: document.getElementById('notes').value
+      };
+
+      const btn = document.getElementById('submitButton');
+      btn.disabled = true;
+      btn.innerText = "ENVIANDO RESERVA...";
+
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        btn.disabled = false;
+        btn.innerText = "RESERVAR Y ENVIAR A WHATSAPP";
+        
+        // Construir mensaje para WhatsApp
+        let itemsText = payload.items.map(i => `${i.qty}x ${i.name}`).join(', ');
+        let msg = `Hola *EL BARRIL DEL PROFE*, deseo confirmar mi reserva:%0A`;
+        msg += `*Cliente:* ${payload.customerName}%0A`;
+        msg += `*Pedido:* ${itemsText}%0A`;
+        msg += `*Total:* $${payload.total.toFixed(2)}%0A`;
+        msg += `*Modalidad:* ${payload.deliveryMode}`;
+
+        window.open(`https://wa.me/593992506756?text=${msg}`, '_blank');
+      })
+      .catch(err => {
+        alert('Ocurrió un error al registrar el pedido.');
+        btn.disabled = false;
+        btn.innerText = "RESERVAR Y ENVIAR A WHATSAPP";
+      });
+    }
+
+    // LÓGICA PANEL ADMINISTRADOR
+    function openAdminModal() {
+      document.getElementById('adminModal').style.display = 'flex';
+    }
+    function closeAdminModal() {
+      document.getElementById('adminModal').style.display = 'none';
+    }
+
+    function loginAdmin() {
+      const pass = document.getElementById('adminPass').value;
+      if (pass === '123ab') {
+        document.getElementById('adminAuth').style.display = 'none';
+        document.getElementById('adminPanel').style.display = 'block';
+        loadAdminOrders();
+      } else {
+        alert('Clave incorrecta.');
+      }
+    }
+
+    function loadAdminOrders() {
+      fetch(`${SCRIPT_URL}?action=getOrders&key=123ab`)
+        .then(res => res.json())
+        .then(res => {
+          if (res.status === 'success') {
+            const tbody = document.getElementById('adminTableBody');
+            tbody.innerHTML = '';
+            res.data.forEach(o => {
+              tbody.innerHTML += `
+                <tr>
+                  <td>${o.id}</td>
+                  <td>${o.cliente}</td>
+                  <td>${o.telefono}</td>
+                  <td>$${Number(o.total || 0).toFixed(2)}</td>
+                  <td><span class="status-badge status-${o.estado}">${o.estado}</span></td>
+                  <td>
+                    <button class="action-btn btn-approve" onclick="updateStatus('${o.id}', 'Aprobado')">✓</button>
+                    <button class="action-btn btn-reject" onclick="updateStatus('${o.id}', 'Rechazado')">✕</button>
+                  </td>
+                </tr>
+              `;
+            });
+          }
+        });
+    }
+
+    function updateStatus(orderId, newStatus) {
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'updateStatus', key: '123ab', orderId, newStatus })
+      }).then(() => {
+        setTimeout(loadAdminOrders, 1000);
+      });
+    }
+  </script>
 </body>
 </html>
