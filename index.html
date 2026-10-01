@@ -3,554 +3,226 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="EL BARRIL DEL PROFE - Carnes al barril">
-  <title>El Barril del Profe - Pedidos y Reservas</title>
-  
-  <!-- Leaflet CSS para el mapa -->
+  <title>El Barril del Profe - Pedidos & ERP</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   
   <style>
-    /* Carga de la tipografía Bronco desde GitHub Raw */
     @font-face {
       font-family: 'Bronco';
       src: url('https://raw.githubusercontent.com/ortizcomunica-art/reservas/d5152a9f6ad1cc4b5d2bcc999870b5715b375cb4/BroncoPersonalUse.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
     }
 
     :root {
-      --primary: #c82333;
-      --primary-dark: #a71d2a;
-      --dark: #121212;
-      --panel-bg: #1e1e1e;
-      --card-bg: #2a2a2a;
-      --text: #f8f9fa;
-      --text-muted: #aaa;
-      --border: #333;
-      --accent: #ffc107;
-      --success: #28a745;
-      --info: #17a2b8;
+      --primary: #c82333; --dark: #121212; --panel-bg: #1e1e1e;
+      --card-bg: #2a2a2a; --text: #f8f9fa; --text-muted: #aaa;
+      --border: #333; --accent: #ffc107; --success: #28a745;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-    body { background-color: var(--dark); color: var(--text); line-height: 1.6; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+    body { background-color: var(--dark); color: var(--text); }
 
-    /* Títulos con Tipografía Bronco */
-    h1, h2, h3, .hero h1 {
-      font-family: 'Bronco', 'Segoe UI', sans-serif;
-      letter-spacing: 1px;
-    }
+    h1, h2, h3 { font-family: 'Bronco', sans-serif; letter-spacing: 1px; }
 
     header {
-      background-color: rgba(0,0,0,0.9);
-      padding: 10px 5%;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
+      background: rgba(0,0,0,0.9); padding: 10px 5%; display: flex;
+      justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000;
       border-bottom: 1px solid var(--border);
     }
-
-    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: white; }
-    .brand img { height: 50px; width: auto; object-fit: contain; }
+    .brand img { height: 50px; }
 
     nav { display: flex; gap: 15px; align-items: center; }
-    nav a { color: var(--text); text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: color 0.2s; }
-    nav a:hover { color: var(--accent); }
+    nav a { color: white; text-decoration: none; font-weight: bold; }
 
-    .admin-btn {
-      background: transparent;
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      padding: 6px 14px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: bold;
-      transition: all 0.2s;
-    }
+    .admin-btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; }
     .admin-btn:hover { background: var(--accent); color: #000; }
 
-    .hero {
-      text-align: center;
-      padding: 60px 20px;
-      background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.9)), url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=1200&q=80');
-      background-size: cover;
-      background-position: center;
-    }
-    .hero-label { background: var(--primary); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; }
-    .hero h1 { font-size: 3rem; margin: 15px 0; color: white; }
+    .hero { text-align: center; padding: 50px 20px; background: #000; }
+    .hero h1 { font-size: 2.8rem; color: white; }
     .hero h1 span { color: var(--accent); }
-    .hero p { color: var(--text-muted); max-width: 600px; margin: 0 auto 20px; }
-    .hero-button {
-      display: inline-block;
-      background: var(--primary);
-      color: white;
-      padding: 12px 28px;
-      text-decoration: none;
-      font-weight: bold;
-      border-radius: 6px;
-      transition: background 0.2s;
-    }
-    .hero-button:hover { background: var(--primary-dark); }
 
-    .section-title { text-align: center; margin: 40px 0 20px; }
-    .section-title small { color: var(--accent); text-transform: uppercase; font-weight: bold; }
-    .section-title h2 { font-size: 2.2rem; }
-
-    .order-layout {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 30px;
-      max-width: 1200px;
-      margin: 0 auto 40px;
-      padding: 0 20px;
-    }
-
+    .order-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; max-width: 1200px; margin: 30px auto; padding: 0 20px; }
     .panel { background: var(--panel-bg); border-radius: 10px; padding: 25px; border: 1px solid var(--border); }
-    .panel-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
-    .panel-title h3 { color: var(--accent); font-size: 1.5rem; }
-
-    .category-title { font-weight: bold; margin: 20px 0 10px; color: var(--accent); text-transform: uppercase; font-size: 0.9rem; letter-spacing: 1px; }
-    .products { display: flex; flex-direction: column; gap: 15px; }
-
-    .product { background: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border); position: relative; }
+    
+    .product { background: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px; position: relative; }
     .product .price { position: absolute; top: 15px; right: 15px; font-weight: bold; color: var(--accent); }
-    .product h4 { margin-bottom: 5px; }
-    .product-description { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; }
 
-    .product-controls { display: flex; justify-content: space-between; align-items: center; }
-    .quantity { display: flex; align-items: center; background: #111; border-radius: 4px; overflow: hidden; }
-    .quantity button { background: none; border: none; color: white; width: 30px; height: 30px; cursor: pointer; font-size: 1.1rem; }
-    .quantity button:hover { background: #333; }
+    .quantity { display: flex; align-items: center; background: #111; border-radius: 4px; display: inline-flex; }
+    .quantity button { background: none; border: none; color: white; width: 30px; height: 30px; cursor: pointer; }
     .quantity span { width: 30px; text-align: center; font-weight: bold; }
 
-    .add-button { background: var(--primary); border: none; color: white; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
-    .add-button:hover { background: var(--primary-dark); }
+    .add-button { background: var(--primary); border: none; color: white; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; }
 
     .form-group { margin-bottom: 15px; }
-    .form-group label { display: block; margin-bottom: 5px; font-size: 0.9rem; color: var(--text-muted); }
-    .form-group input, .form-group textarea, .form-group select {
-      width: 100%; padding: 10px; background: #111; border: 1px solid var(--border); border-radius: 6px; color: white; outline: none;
-    }
-    .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); }
-    .required { color: var(--primary); }
+    .form-group label { display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.9rem; }
+    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; background: #111; border: 1px solid var(--border); border-radius: 6px; color: white; }
 
-    .delivery-options, .payment-options { display: flex; gap: 10px; margin-top: 5px; }
-    .delivery-option, .payment-option { flex: 1; }
-    .delivery-option input, .payment-option input { display: none; }
-    .delivery-option label, .payment-option label {
-      display: block; text-align: center; padding: 10px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; font-size: 0.85rem;
-    }
-    .delivery-option input:checked + label, .payment-option input:checked + label { background: var(--primary); border-color: var(--primary); font-weight: bold; }
+    .submit-button { width: 100%; background: var(--success); border: none; color: white; padding: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 15px; }
 
-    #deliveryBox { display: none; margin-top: 15px; background: var(--card-bg); padding: 15px; border-radius: 8px; }
-    #map { height: 220px; border-radius: 6px; margin: 10px 0; }
-    .location-button { background: #333; border: 1px solid var(--border); color: white; padding: 5px 10px; font-size: 0.75rem; border-radius: 4px; cursor: pointer; }
-    
-    .delivery-info-card {
-      background: #111;
-      border: 1px solid var(--accent);
-      border-radius: 6px;
-      padding: 10px;
-      margin-bottom: 15px;
-      font-size: 0.85rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .cart-empty { text-align: center; color: var(--text-muted); padding: 20px; font-size: 0.9rem; }
-    .cart-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
-
-    .totals { margin-top: 20px; border-top: 2px solid var(--border); padding-top: 10px; }
-    .total-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem; }
-    .total-row.final { font-size: 1.2rem; color: var(--accent); font-weight: bold; border-top: 1px solid var(--border); padding-top: 8px; }
-
-    .checkbox-line { display: flex; gap: 10px; font-size: 0.8rem; color: var(--text-muted); margin-top: 15px; cursor: pointer; }
-
-    .submit-button { width: 100%; background: var(--success); border: none; color: white; padding: 14px; font-size: 1rem; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 20px; }
-    .submit-button:hover { background: #218838; }
-
-    /* Modal Administrador */
+    /* Modal Admin */
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; }
-    .modal-content { background: var(--panel-bg); padding: 25px; border-radius: 10px; max-width: 900px; width: 95%; border: 1px solid var(--border); max-height: 90vh; overflow-y: auto; }
-    .modal-close { background: var(--primary); border: none; color: white; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-top: 15px; float: right; }
+    .modal-content { background: var(--panel-bg); padding: 25px; border-radius: 10px; max-width: 950px; width: 95%; border: 1px solid var(--border); max-height: 90vh; overflow-y: auto; }
+    .modal-close { background: var(--primary); border: none; color: white; padding: 8px 16px; border-radius: 4px; cursor: pointer; float: right; }
 
-    .admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.82rem; }
+    .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+    .admin-tab { background: #111; color: white; border: 1px solid var(--border); padding: 8px 16px; border-radius: 4px; cursor: pointer; }
+    .admin-tab.active { background: var(--accent); color: black; font-weight: bold; }
+
+    .admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem; }
     .admin-table th, .admin-table td { border: 1px solid var(--border); padding: 8px; text-align: left; }
     .admin-table th { background: #111; color: var(--accent); }
-    .status-badge { padding: 3px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; display: inline-block; }
-    
-    .status-Pendiente { background: #ffc107; color: #000; }
-    .status-EnPreparacion { background: #17a2b8; color: #fff; }
-    .status-EnCamino { background: #007bff; color: #fff; }
-    .status-Entregado { background: #28a745; color: #fff; }
-    .status-Rechazado { background: #dc3545; color: #fff; }
 
-    .action-select { background: #111; color: white; border: 1px solid var(--border); padding: 4px; border-radius: 4px; font-size: 0.75rem; }
-    .ws-btn { background: #25D366; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 0.75rem; display: inline-flex; align-items: center; gap: 4px; text-decoration: none; }
-
-    /* Footer */
-    footer {
-      background: #0a0a0a;
-      border-top: 1px solid var(--border);
-      padding: 40px 20px 20px;
-      margin-top: 60px;
-    }
-    .footer-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 30px;
-    }
-    .footer-col h4 { font-family: 'Bronco', sans-serif; color: var(--accent); margin-bottom: 15px; font-size: 1.3rem; }
-    .footer-col p, .footer-col a { color: var(--text-muted); font-size: 0.9rem; text-decoration: none; display: block; margin-bottom: 8px; }
-    .footer-col a:hover { color: white; }
-    .social-links { display: flex; gap: 12px; margin-top: 10px; }
-    .social-btn { background: var(--card-bg); padding: 8px 12px; border-radius: 4px; border: 1px solid var(--border); font-weight: bold; }
-    
-    .footer-bottom {
-      text-align: center;
-      margin-top: 40px;
-      padding-top: 20px;
-      border-top: 1px solid var(--border);
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
+    .alert-badge { background: #dc3545; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
   </style>
 </head>
 <body>
 
   <header>
-    <a href="#inicio" class="brand">
-      <img src="https://raw.githubusercontent.com/ortizcomunica-art/reservas/d5152a9f6ad1cc4b5d2bcc999870b5715b375cb4/LOGO.png" alt="El Barril del Profe Logo">
+    <a href="#" class="brand">
+      <img src="https://raw.githubusercontent.com/ortizcomunica-art/reservas/d5152a9f6ad1cc4b5d2bcc999870b5715b375cb4/LOGO.png" alt="Logo">
     </a>
     <nav>
-      <a href="#inicio">INICIO</a>
       <a href="#pedido">PEDIDO</a>
-      <button class="admin-btn" onclick="openAdminModal()">ADMINISTRADOR</button>
+      <button class="admin-btn" onclick="openAdminModal()">ADMINISTRADOR / ERP</button>
     </nav>
   </header>
 
-  <section id="inicio" class="hero">
-    <span class="hero-label">Carnes al Barril</span>
-    <h1>SABOR<br><span>HECHO A FUEGO</span></h1>
-    <p>Carnes preparadas al barril, acompañantes y bebidas para disfrutar en casa o con los amigos.</p>
-    <a href="#pedido" class="hero-button">HACER PEDIDO</a>
+  <section class="hero">
+    <h1>EL BARRIL DEL PROFE<br><span>SOLO VIERNES, SÁBADO Y DOMINGO</span></h1>
   </section>
 
-  <div class="section-title" id="pedido">
-    <small>Reserva tu pedido</small>
-    2 Haz tu pedido</h2>
-  </div>
-
-  <div class="order-layout">
-    <!-- PANEL DE MENÚ -->
+  <div class="order-layout" id="pedido">
+    <!-- MENÚ -->
     <div class="panel">
-      <div class="panel-title">
-        <h3>Menú</h3>
-        <span>Atención continua</span>
+      <h3>Menú Disponibles</h3>
+      
+      <div class="product">
+        <span class="price">$5.50</span>
+        <h4>Chicharrón</h4>
+        <p style="font-size:0.8rem; color:var(--text-muted);">200g carne + plátano/papa + ensalada</p>
+        <div style="display:flex; justify-content:space-between; margin-top:10px;">
+          <div class="quantity">
+            <button onclick="changeQty('chicharron', -1)">−</button>
+            <span id="qty-chicharron">0</span>
+            <button onclick="changeQty('chicharron', 1)">+</button>
+          </div>
+          <button class="add-button" onclick="addProduct('PROD-001', 'Chicharrón', 5.50, 'chicharron')">AGREGAR</button>
+        </div>
       </div>
 
-      <div class="category-title">Carnes</div>
-      <div class="products">
-        <article class="product">
-          <span class="price">$5.50</span>
-          <h4>Chicharrón</h4>
-          <p class="product-description">200 g + plátano/papas + ensalada</p>
-          <div class="product-controls">
-            <div class="quantity">
-              <button type="button" onclick="changeQty('chicharron', -1)">−</button>
-              <span id="qty-chicharron">0</span>
-              <button type="button" onclick="changeQty('chicharron', 1)">+</button>
-            </div>
-            <button type="button" class="add-button" onclick="addProduct('PROD-001', 'Chicharrón', 5.50, 'chicharron')">AGREGAR</button>
+      <div class="product">
+        <span class="price">$6.50</span>
+        <h4>Costillar BBQ</h4>
+        <p style="font-size:0.8rem; color:var(--text-muted);">350g carne + plátano/papa + ensalada</p>
+        <div style="display:flex; justify-content:space-between; margin-top:10px;">
+          <div class="quantity">
+            <button onclick="changeQty('costillar', -1)">−</button>
+            <span id="qty-costillar">0</span>
+            <button onclick="changeQty('costillar', 1)">+</button>
           </div>
-        </article>
-
-        <article class="product">
-          <span class="price">$6.50</span>
-          <h4>Costillar BBQ</h4>
-          <p class="product-description">350 g + plátano/papas + ensalada</p>
-          <div class="product-controls">
-            <div class="quantity">
-              <button type="button" onclick="changeQty('costillar', -1)">−</button>
-              <span id="qty-costillar">0</span>
-              <button type="button" onclick="changeQty('costillar', 1)">+</button>
-            </div>
-            <button type="button" class="add-button" onclick="addProduct('PROD-002', 'Costillar BBQ', 6.50, 'costillar')">AGREGAR</button>
-          </div>
-        </article>
-      </div>
-
-      <div class="category-title">Acompañantes</div>
-      <div class="products">
-        <article class="product">
-          <span class="price">$1.50</span>
-          <h4>Choclo</h4>
-          <p class="product-description">Con queso y mayonesa</p>
-          <div class="product-controls">
-            <div class="quantity">
-              <button type="button" onclick="changeQty('choclo', -1)">−</button>
-              <span id="qty-choclo">0</span>
-              <button type="button" onclick="changeQty('choclo', 1)">+</button>
-            </div>
-            <button type="button" class="add-button" onclick="addProduct('PROD-003', 'Choclo', 1.50, 'choclo')">AGREGAR</button>
-          </div>
-        </article>
-
-        <article class="product">
-          <span class="price">$2.00</span>
-          <h4>Plátanos asados</h4>
-          <p class="product-description">Queso, sal prieta o mayonesa de la casa</p>
-          <div class="product-controls">
-            <div class="quantity">
-              <button type="button" onclick="changeQty('platanos', -1)">−</button>
-              <span id="qty-platanos">0</span>
-              <button type="button" onclick="changeQty('platanos', 1)">+</button>
-            </div>
-            <button type="button" class="add-button" onclick="addProduct('PROD-004', 'Plátanos asados', 2.00, 'platanos')">AGREGAR</button>
-          </div>
-        </article>
-      </div>
-
-      <div class="category-title">Bebidas</div>
-      <div class="products">
-        <article class="product">
-          <span class="price">$5.00</span>
-          <h4>Jarra de limonada</h4>
-          <p class="product-description">Jarra de limonada natural</p>
-          <div class="product-controls">
-            <div class="quantity">
-              <button type="button" onclick="changeQty('limonada', -1)">−</button>
-              <span id="qty-limonada">0</span>
-              <button type="button" onclick="changeQty('limonada', 1)">+</button>
-            </div>
-            <button type="button" class="add-button" onclick="addProduct('PROD-005', 'Jarra de limonada', 5.00, 'limonada')">AGREGAR</button>
-          </div>
-        </article>
-
-        <article class="product">
-          <span class="price">$2.00</span>
-          <h4>Gaseosa personal</h4>
-          <p class="product-description">Gaseosa personal</p>
-          <div class="product-controls">
-            <div class="quantity">
-              <button type="button" onclick="changeQty('gaseosa', -1)">−</button>
-              <span id="qty-gaseosa">0</span>
-              <button type="button" onclick="changeQty('gaseosa', 1)">+</button>
-            </div>
-            <button type="button" class="add-button" onclick="addProduct('PROD-006', 'Gaseosa personal', 2.00, 'gaseosa')">AGREGAR</button>
-          </div>
-        </article>
+          <button class="add-button" onclick="addProduct('PROD-002', 'Costillar BBQ', 6.50, 'costillar')">AGREGAR</button>
+        </div>
       </div>
     </div>
 
-    <!-- PANEL DE CARRITO Y FORMULARIO -->
+    <!-- DATOS DE RESERVA -->
     <div class="panel">
-      <div class="panel-title">
-        <h3>Tu pedido</h3>
-        <span>Reserva</span>
+      <h3>Reserva tu Pedido</h3>
+      <div class="form-group">
+        <label>Nombre del cliente *</label>
+        <input id="customerName" type="text" required>
+      </div>
+      <div class="form-group">
+        <label>Número de celular *</label>
+        <input id="phone" type="tel" required>
+      </div>
+      <div class="form-group">
+        <label>Fecha de Reserva (Solo Viernes, Sábado o Domingo) *</label>
+        <input id="orderDate" type="date" onchange="validateWeekend(this)">
       </div>
 
       <div class="form-group">
-        <label for="customerName">Nombre del cliente <span class="required">*</span></label>
-        <input id="customerName" type="text" placeholder="Ej. Juan Pérez" required>
+        <label>Modalidad *</label>
+        <select id="deliveryMode">
+          <option value="En el local">En el local</option>
+          <option value="Para llevar">Para llevar</option>
+          <option value="A domicilio">A domicilio</option>
+        </select>
       </div>
 
-      <div class="form-group">
-        <label for="phone">Número de celular <span class="required">*</span></label>
-        <input id="phone" type="tel" placeholder="0991234567" required>
+      <div id="cart" style="margin: 15px 0; border-top:1px solid #333; padding-top:10px;">
+        <p style="color:var(--text-muted);">Sin productos seleccionados</p>
       </div>
 
-      <div class="form-group">
-        <label for="orderDate">Fecha del pedido <span class="required">*</span></label>
-        <input id="orderDate" type="date" required>
-      </div>
-
-      <div class="form-group">
-        <label>Modalidad <span class="required">*</span></label>
-        <div class="delivery-options">
-          <div class="delivery-option">
-            <input type="radio" id="takeaway" name="delivery" value="Para llevar" onchange="toggleDelivery(false)">
-            <label for="takeaway">Para llevar</label>
-          </div>
-          <div class="delivery-option">
-            <input type="radio" id="local" name="delivery" value="En el local" checked onchange="toggleDelivery(false)">
-            <label for="local">En el local</label>
-          </div>
-          <div class="delivery-option">
-            <input type="radio" id="delivery" name="delivery" value="A domicilio" onchange="toggleDelivery(true)">
-            <label for="delivery">A domicilio</label>
-          </div>
-        </div>
-      </div>
-
-      <div id="deliveryBox">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <strong>Ubicación de entrega</strong>
-          <button type="button" class="location-button" onclick="getLocation()">USAR MI UBICACIÓN</button>
-        </div>
-        
-        <div id="map"></div>
-        
-        <div class="delivery-info-card">
-          <div>
-            <div>📏 <strong>Distancia:</strong> <span id="distDisplay">0.0 km</span></div>
-            <div>⏱️ <strong>Est. Entrega:</strong> <span id="timeDisplay">-- min</span></div>
-          </div>
-          <div style="text-align:right;">
-            <div style="font-size:0.75rem; color:var(--text-muted);">Costo Delivery:</div>
-            <div style="font-size:1.1rem; font-weight:bold; color:var(--accent);" id="deliveryFeeCard">$0.00</div>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="sector">Sector</label>
-          <input id="sector" type="text" value="Sector norte">
-        </div>
-        <div class="form-group">
-          <label for="address">Dirección <span class="required">*</span></label>
-          <input id="address" type="text" placeholder="Calle principal y secundaria">
-        </div>
-        <div class="form-group">
-          <label for="reference">Referencia</label>
-          <textarea id="reference" placeholder="Ej. Casa blanca junto al parque..."></textarea>
-        </div>
-      </div>
-
-      <div class="category-title">Productos seleccionados</div>
-      <div id="cart">
-        <div class="cart-empty">Todavía no has agregado productos.</div>
-      </div>
-
-      <div class="totals">
-        <div class="total-row"><span>Subtotal</span><strong id="subtotal">$0.00</strong></div>
-        <div class="total-row"><span>Envío</span><strong id="deliveryFee">$0.00</strong></div>
-        <div class="total-row final"><span>TOTAL</span><strong id="total">$0.00</strong></div>
-      </div>
-
-      <div class="category-title">Forma de pago</div>
-      <div class="payment-options">
-        <div class="payment-option">
-          <input id="cash" type="radio" name="payment" value="Efectivo" checked>
-          <label for="cash">Efectivo</label>
-        </div>
-        <div class="payment-option">
-          <input id="transfer" type="radio" name="payment" value="Transferencia">
-          <label for="transfer">Transferencia</label>
-        </div>
-      </div>
-
-      <label class="checkbox-line">
-        <input id="marketingConsent" type="checkbox" checked>
-        <span>Acepto recibir promociones y novedades de EL BARRIL DEL PROFE mediante mi número de celular.</span>
-      </label>
-
-      <div class="form-group" style="margin-top:15px;">
-        <label for="notes">Observaciones del pedido</label>
-        <textarea id="notes" placeholder="Cubiertos, salsas, etc."></textarea>
-      </div>
-
-      <button id="submitButton" type="button" class="submit-button" onclick="submitOrder()">RESERVAR Y ENVIAR A WHATSAPP</button>
+      <button id="submitButton" class="submit-button" onclick="submitOrder()">FINALIZAR RESERVA</button>
     </div>
   </div>
 
-  <!-- MODAL DE ADMINISTRACIÓN -->
+  <!-- MODAL ADMIN / ERP -->
   <div id="adminModal" class="modal">
     <div class="modal-content">
-      <h3>Panel de Administración</h3>
-      <div id="adminAuth">
-        <p style="margin: 15px 0; font-size:0.9rem;">Ingresa la clave de acceso:</p>
-        <input type="password" id="adminPass" placeholder="Clave de acceso" style="width:100%; padding:10px; background:#111; border:1px solid var(--border); color:white; border-radius:4px; margin-bottom:15px;">
-        <button onclick="loginAdmin()" style="background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:4px; cursor:pointer; font-weight:bold;">INGRESAR</button>
+      <div class="admin-tabs">
+        <button class="admin-tab active" onclick="switchAdminTab('ordersTab')">📋 Reservas</button>
+        <button class="admin-tab" onclick="switchAdminTab('inventoryTab')">📦 Inventario & Insumos</button>
       </div>
 
-      <div id="adminPanel" style="display:none;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-          <p style="font-size:0.85rem; color:var(--text-muted);">Gestión de Reservas y Estados:</p>
-          <button onclick="loadAdminOrders()" style="background:#333; color:white; border:1px solid var(--border); padding:5px 10px; border-radius:4px; cursor:pointer; font-size:0.75rem;">🔄 Actualizar Lista</button>
-        </div>
-        <div style="overflow-x:auto;">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Cliente</th>
-                <th>Teléfono</th>
-                <th>Modalidad</th>
-                <th>Total</th>
-                <th>Estado</th>
-                <th>Cambiar Estado</th>
-                <th>Notificar WS</th>
-              </tr>
-            </thead>
-            <tbody id="adminTableBody">
-              <!-- Cargado dinámicamente -->
-            </tbody>
-          </table>
-        </div>
+      <div id="adminAuth">
+        <input type="password" id="adminPass" placeholder="Clave de acceso" style="padding:10px; width:100%; background:#111; color:white; border:1px solid #333; margin-bottom:10px;">
+        <button onclick="loginAdmin()" style="background:var(--primary); color:white; padding:8px 16px; border:none; cursor:pointer;">Entrar</button>
       </div>
-      <button class="modal-close" onclick="closeAdminModal()">CERRAR</button>
+
+      <!-- TAB RESERVAS -->
+      <div id="ordersTab" style="display:none;">
+        <button onclick="loadOrders()" style="background:#333; color:white; padding:5px 10px; border:1px solid #555; margin-bottom:10px; cursor:pointer;">🔄 Actualizar</button>
+        <table class="admin-table">
+          <thead>
+            <tr><th>ID</th><th>Cliente</th><th>Teléfono</th><th>Modalidad</th><th>Total</th><th>Estado</th><th>Acción</th></tr>
+          </thead>
+          <tbody id="ordersBody"></tbody>
+        </table>
+      </div>
+
+      <!-- TAB INVENTARIO Y REABASTECIMIENTO -->
+      <div id="inventoryTab" style="display:none;">
+        <div style="background:#111; padding:15px; border-radius:6px; margin-bottom:15px; border:1px solid var(--accent);">
+          <h4 style="color:var(--accent); margin-bottom:10px;">➕ Cargar Nueva Compra / Reabastecer Insumo</h4>
+          <div style="display:grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap:10px;">
+            <input id="ingNombre" type="text" placeholder="Ej. Panceta" style="padding:8px; background:#222; color:white; border:1px solid #444;">
+            <input id="ingCantidad" type="number" placeholder="Cantidad" style="padding:8px; background:#222; color:white; border:1px solid #444;">
+            <input id="ingUnidad" type="text" placeholder="Unidad (lbs, un, kg)" style="padding:8px; background:#222; color:white; border:1px solid #444;">
+            <input id="ingCosto" type="number" placeholder="Costo Total $" style="padding:8px; background:#222; color:white; border:1px solid #444;">
+          </div>
+          <button onclick="restockIngrediente()" style="margin-top:10px; background:var(--success); color:white; padding:8px 16px; border:none; cursor:pointer; font-weight:bold;">REGISTRAR COMPRA</button>
+        </div>
+
+        <button onclick="loadInventory()" style="background:#333; color:white; padding:5px 10px; border:1px solid #555; margin-bottom:10px; cursor:pointer;">🔄 Actualizar Inventario</button>
+        <table class="admin-table">
+          <thead>
+            <tr><th>Insumo</th><th>Stock Actual</th><th>Unidad</th><th>Stock Mínimo</th><th>Costo Unit. Est.</th><th>Estado</th></tr>
+          </thead>
+          <tbody id="inventoryBody"></tbody>
+        </table>
+      </div>
+
+      <button class="modal-close" onclick="closeAdminModal()" style="margin-top:15px;">CERRAR</button>
     </div>
   </div>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="footer-container">
-      <div class="footer-col">
-        <h4>EL BARRIL DEL PROFE</h4>
-        <p>Sabor único de carnes preparadas al barril con la mejor calidad y servicio.</p>
-      </div>
-      <div class="footer-col">
-        <h4>Ubicación y Contacto</h4>
-        <p>📍 Quito, Ecuador</p>
-        <p>📞 +593 99 250 6756</p>
-        <a href="https://goo.gl/maps/X1CpR3tm2MZANC4r8" target="_blank" style="color:var(--accent); font-weight:bold;">🗺️ Ver Ubicación en Google Maps</a>
-      </div>
-      <div class="footer-col">
-        <h4>SÍGUENOS</h4>
-        <div class="social-links">
-          <a href="#" class="social-btn">Facebook</a>
-          <a href="#" class="social-btn">Instagram</a>
-          <a href="#" class="social-btn">TikTok</a>
-        </div>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p>© 2026 Todos los derechos reservados. Sitio web desarrollado por <strong>Ortíz Comunicaciones</strong>.</p>
-    </div>
-  </footer>
-
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyUaX1iTktQgPBcBsERhZR-zWEsVYjqYB1-O1LVmvrLgmvt14EnuTUbsmp-r8nP7LPV/exec";
-    
-    // Coordenadas del Local
-    const STORE_LAT = -0.12422216520351366;
-    const STORE_LNG = -78.48703013498067;
-
     let cart = {};
-    let quantities = { chicharron: 0, costillar: 0, choclo: 0, platanos: 0, limonada: 0, gaseosa: 0 };
-    let map, userMarker, storeMarker;
-    let userLat = STORE_LAT;
-    let userLng = STORE_LNG;
-    let calculatedDeliveryFee = 0.00;
+    let quantities = { chicharron: 0, costillar: 0 };
 
-    // CONFIGURACIÓN DE FECHA MÍNIMA (Bloquea días anteriores a hoy)
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    const minDate = `${year}-${month}-${day}`;
+    // CONTROL DE FECHAS: SOLO VIERNES (5), SÁBADO (6) Y DOMINGO (0)
+    function validateWeekend(input) {
+      if (!input.value) return;
+      const dateParts = input.value.split('-');
+      const selectedDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
+      const day = selectedDate.getDay();
 
-    const dateInput = document.getElementById('orderDate');
-    if (dateInput) {
-      dateInput.min = minDate;
-      dateInput.value = minDate;
+      if (day !== 0 && day !== 5 && day !== 6) {
+        alert("Atención: El Barril del Profe solo atiende los días Viernes, Sábado y Domingo. Selecciona un día válido.");
+        input.value = "";
+      }
     }
 
     function changeQty(key, delta) {
@@ -560,10 +232,7 @@
 
     function addProduct(id, name, price, key) {
       const qty = quantities[key];
-      if (qty <= 0) {
-        alert('Selecciona una cantidad mayor a 0');
-        return;
-      }
+      if (qty <= 0) return alert('Selecciona una cantidad');
       cart[id] = { id: id, name: name, price: price, qty: qty };
       renderCart();
     }
@@ -571,303 +240,100 @@
     function renderCart() {
       const cartDiv = document.getElementById('cart');
       const keys = Object.keys(cart);
-      if (keys.length === 0) {
-        cartDiv.innerHTML = '<div class="cart-empty">Todavía no has agregado productos.</div>';
-        updateTotals(0);
-        return;
-      }
-
+      if (keys.length === 0) return cartDiv.innerHTML = '<p style="color:var(--text-muted);">Sin productos seleccionados</p>';
+      
       let html = '';
-      let subtotal = 0;
+      let total = 0;
       keys.forEach(k => {
         const item = cart[k];
-        const itemTotal = item.price * item.qty;
-        subtotal += itemTotal;
-        html += `
-          <div class="cart-item">
-            <span>${item.qty} x ${item.name}</span>
-            <span>$${itemTotal.toFixed(2)}</span>
-          </div>
-        `;
+        total += item.price * item.qty;
+        html += `<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>${item.qty}x ${item.name}</span><span>$${(item.price*item.qty).toFixed(2)}</span></div>`;
       });
+      html += `<hr style="border-color:#333; margin:8px 0;"><div style="display:flex; justify-content:space-between; font-weight:bold; color:var(--accent);"><span>TOTAL:</span><span>$${total.toFixed(2)}</span></div>`;
       cartDiv.innerHTML = html;
-      updateTotals(subtotal);
-    }
-
-    function calculateDistance(lat1, lon1, lat2, lon2) {
-      const R = 6371; 
-      const dLat = (lat2 - lat1) * Math.PI / 180;
-      const dLon = (lon2 - lon1) * Math.PI / 180;
-      const a = 
-        Math.sin(dLat/2) * Math.sin(dLat/2) +
-        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-        Math.sin(dLon/2) * Math.sin(dLon/2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-      return (R * c) * 1.3; 
-    }
-
-    function calculateDeliveryDetails() {
-      const dist = calculateDistance(STORE_LAT, STORE_LNG, userLat, userLng);
-      const baseFee = 1.50; 
-      const perKmRate = 0.50; 
-      
-      if (dist <= 2.0) {
-        calculatedDeliveryFee = baseFee;
-      } else {
-        calculatedDeliveryFee = baseFee + ((dist - 2.0) * perKmRate);
-      }
-
-      const estimatedTime = Math.round(15 + (dist * 3));
-
-      document.getElementById('distDisplay').innerText = dist.toFixed(1) + ' km';
-      document.getElementById('timeDisplay').innerText = estimatedTime + ' - ' + (estimatedTime + 10) + ' min';
-      document.getElementById('deliveryFeeCard').innerText = '$' + calculatedDeliveryFee.toFixed(2);
-
-      renderCart();
-    }
-
-    function updateTotals(subtotal) {
-      const isDelivery = document.getElementById('delivery').checked;
-      const deliveryFee = isDelivery ? calculatedDeliveryFee : 0.00;
-      const total = subtotal + deliveryFee;
-
-      document.getElementById('subtotal').innerText = '$' + subtotal.toFixed(2);
-      document.getElementById('deliveryFee').innerText = '$' + deliveryFee.toFixed(2);
-      document.getElementById('total').innerText = '$' + total.toFixed(2);
-    }
-
-    function toggleDelivery(showMap) {
-      document.getElementById('deliveryBox').style.display = showMap ? 'block' : 'none';
-      if (showMap) {
-        if (!map) {
-          initMap();
-        } else {
-          setTimeout(() => map.invalidateSize(), 200);
-        }
-      }
-      renderCart();
-    }
-
-    function initMap() {
-      map = L.map('map').setView([STORE_LAT, STORE_LNG], 14);
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap'
-      }).addTo(map);
-
-      storeMarker = L.marker([STORE_LAT, STORE_LNG]).addTo(map)
-        .bindPopup('<b>El Barril del Profe</b><br>Ubicación del Local')
-        .openPopup();
-
-      userMarker = L.marker([STORE_LAT, STORE_LNG], { draggable: true }).addTo(map)
-        .bindPopup('Arrastra hasta tu ubicación de entrega');
-
-      userMarker.on('dragend', function(e) {
-        const pos = userMarker.getLatLng();
-        userLat = pos.lat;
-        userLng = pos.lng;
-        calculateDeliveryDetails();
-      });
-
-      calculateDeliveryDetails();
-    }
-
-    function getLocation() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(pos => {
-          userLat = pos.coords.latitude;
-          userLng = pos.coords.longitude;
-          if (map && userMarker) {
-            map.setView([userLat, userLng], 15);
-            userMarker.setLatLng([userLat, userLng]);
-            calculateDeliveryDetails();
-          }
-        }, () => {
-          alert('No se pudo acceder a tu ubicación. Por favor selecciona tu punto manualmente en el mapa.');
-        });
-      }
     }
 
     function submitOrder() {
       const name = document.getElementById('customerName').value.trim();
       const phone = document.getElementById('phone').value.trim();
-      const selectedDate = document.getElementById('orderDate').value;
-      const itemsKeys = Object.keys(cart);
+      const date = document.getElementById('orderDate').value;
+      const keys = Object.keys(cart);
 
-      if (!name || !phone || !selectedDate) {
-        alert('Por favor, completa tu nombre, celular y fecha del pedido.');
-        return;
-      }
-
-      // VALIDACIÓN DE FECHA PASADA
-      if (selectedDate < minDate) {
-        alert('La fecha del pedido no puede ser anterior al día de hoy.');
-        return;
-      }
-
-      if (itemsKeys.length === 0) {
-        alert('Agrega al menos un producto a tu pedido.');
-        return;
-      }
-
-      const isDelivery = document.getElementById('delivery').checked;
-      const subtotal = itemsKeys.reduce((acc, k) => acc + (cart[k].price * cart[k].qty), 0);
-      const deliveryFee = isDelivery ? calculatedDeliveryFee : 0.00;
-      const total = subtotal + deliveryFee;
+      if (!name || !phone || !date || keys.length === 0) return alert("Por favor completa los datos obligatorios y agrega productos.");
 
       const payload = {
-        customerName: name,
-        phone: phone,
-        orderDate: selectedDate,
-        deliveryMode: document.querySelector('input[name="delivery"]:checked').value,
-        sector: isDelivery ? document.getElementById('sector').value : '',
-        address: isDelivery ? document.getElementById('address').value : '',
-        reference: isDelivery ? document.getElementById('reference').value : '',
-        items: itemsKeys.map(k => cart[k]),
-        subtotal: subtotal,
-        deliveryFee: deliveryFee,
-        total: total,
-        paymentMethod: document.querySelector('input[name="payment"]:checked').value,
-        notes: document.getElementById('notes').value
+        customerName: name, phone: phone, orderDate: date,
+        deliveryMode: document.getElementById('deliveryMode').value,
+        items: keys.map(k => cart[k]),
+        subtotal: keys.reduce((acc, k) => acc + (cart[k].price * cart[k].qty), 0),
+        total: keys.reduce((acc, k) => acc + (cart[k].price * cart[k].qty), 0)
       };
 
-      const btn = document.getElementById('submitButton');
-      btn.disabled = true;
-      btn.innerText = "ENVIANDO RESERVA...";
-
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      })
-      .then(() => {
-        btn.disabled = false;
-        btn.innerText = "RESERVAR Y ENVIAR A WHATSAPP";
-        
-        let itemsText = payload.items.map(i => `${i.qty}x ${i.name}`).join(', ');
-        let msg = `Hola *EL BARRIL DEL PROFE*, deseo registrar mi reserva:%0A`;
-        msg += `*Cliente:* ${payload.customerName}%0A`;
-        msg += `*Fecha Reserva:* ${payload.orderDate}%0A`;
-        msg += `*Pedido:* ${itemsText}%0A`;
-        msg += `*Total:* $${payload.total.toFixed(2)}%0A`;
-        msg += `*Modalidad:* ${payload.deliveryMode}`;
-
-        window.open(`https://wa.me/593992506756?text=${msg}`, '_blank');
-      })
-      .catch(err => {
-        alert('Ocurrió un error al registrar el pedido.');
-        btn.disabled = false;
-        btn.innerText = "RESERVAR Y ENVIAR A WHATSAPP";
-      });
+      fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+      .then(() => alert("Reserva guardada con éxito. Descontando stock..."))
+      .catch(() => alert("Error al conectar con la base de datos."));
     }
 
-    // PANEL DE ADMINISTRACIÓN (JSONP)
-    function openAdminModal() {
-      document.getElementById('adminModal').style.display = 'flex';
-    }
-    function closeAdminModal() {
-      document.getElementById('adminModal').style.display = 'none';
-    }
-
+    // ERP Y ADMINISTRACIÓN
+    function openAdminModal() { document.getElementById('adminModal').style.display = 'flex'; }
+    function closeAdminModal() { document.getElementById('adminModal').style.display = 'none'; }
+    
     function loginAdmin() {
-      const pass = document.getElementById('adminPass').value;
-      if (pass === '123ab') {
+      if (document.getElementById('adminPass').value === '123ab') {
         document.getElementById('adminAuth').style.display = 'none';
-        document.getElementById('adminPanel').style.display = 'block';
-        loadAdminOrders();
-      } else {
-        alert('Clave incorrecta.');
-      }
+        document.getElementById('ordersTab').style.display = 'block';
+        loadOrders();
+      } else alert("Clave incorrecta.");
     }
 
-    function loadAdminOrders() {
-      const tbody = document.getElementById('adminTableBody');
-      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Cargando reservas...</td></tr>';
-
-      const oldScript = document.getElementById('jsonp-script');
-      if (oldScript) oldScript.remove();
-
-      const script = document.createElement('script');
-      script.id = 'jsonp-script';
-      script.src = `${SCRIPT_URL}?action=getOrders&key=123ab&callback=handleOrdersResponse&t=${new Date().getTime()}`;
-      document.body.appendChild(script);
+    function switchAdminTab(tabId) {
+      document.getElementById('ordersTab').style.display = tabId === 'ordersTab' ? 'block' : 'none';
+      document.getElementById('inventoryTab').style.display = tabId === 'inventoryTab' ? 'block' : 'none';
+      if (tabId === 'inventoryTab') loadInventory();
     }
 
-    function handleOrdersResponse(res) {
-      const tbody = document.getElementById('adminTableBody');
-      if (res.status === 'success') {
-        if (!res.data || res.data.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">No hay reservas registradas.</td></tr>';
-          return;
-        }
+    function loadOrders() {
+      callJSONP(`${SCRIPT_URL}?action=getOrders&key=123ab`, res => {
+        const tbody = document.getElementById('ordersBody');
         tbody.innerHTML = '';
         res.data.forEach(o => {
-          const rawStatus = (o.estado || 'Pendiente').replace(/\s+/g, '');
-          const phoneClean = (o.telefono || '').toString().replace(/\D/g, '');
-          const intPhone = phoneClean.startsWith('0') ? '593' + phoneClean.substring(1) : phoneClean;
-
-          tbody.innerHTML += `
-            <tr>
-              <td><strong>${o.id}</strong></td>
-              <td>${o.cliente}</td>
-              <td>${o.telefono}</td>
-              <td>${o.modalidad}</td>
-              <td>$${Number(o.total || 0).toFixed(2)}</td>
-              <td><span class="status-badge status-${rawStatus}">${o.estado}</span></td>
-              <td>
-                <select class="action-select" onchange="updateStatus('${o.id}', this.value)">
-                  <option value="">Cambiar...</option>
-                  <option value="En Preparación">Aprobar / En Preparación</option>
-                  <option value="En Camino">En Camino / Listo</option>
-                  <option value="Entregado">Entregado</option>
-                  <option value="Rechazado">Rechazar</option>
-                </select>
-              </td>
-              <td>
-                <button class="ws-btn" onclick="sendWhatsAppNotice('${intPhone}', '${o.cliente}', '${o.estado}', '${o.modalidad}')">💬 WS</button>
-              </td>
-            </tr>
-          `;
+          tbody.innerHTML += `<tr><td>${o.id}</td><td>${o.cliente}</td><td>${o.telefono}</td><td>${o.modalidad}</td><td>$${o.total}</td><td>${o.estado}</td><td><button onclick="updateStatus('${o.id}')">Aprobar</button></td></tr>`;
         });
-      } else {
-        tbody.innerHTML = `<tr><td colspan="8" style="text-align:center; color:var(--primary);">${res.message || 'Error al autenticar.'}</td></tr>`;
-      }
-    }
-
-    function updateStatus(orderId, newStatus) {
-      if (!newStatus) return;
-      fetch(SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'updateStatus', key: '123ab', orderId: orderId, newStatus: newStatus })
-      }).then(() => {
-        setTimeout(loadAdminOrders, 1200);
       });
     }
 
-    function sendWhatsAppNotice(phone, cliente, estado, modalidad) {
-      if (!phone) {
-        alert('Número de teléfono no disponible.');
-        return;
-      }
-      let msg = '';
-      if (estado === 'En Preparación') {
-        msg = `Hola *${cliente}*, ¡tu reserva en *EL BARRIL DEL PROFE* ha sido aceptada! 🔥 Tu pedido ya se encuentra en proceso de preparación.`;
-      } else if (estado === 'En Camino') {
-        if (modalidad === 'A domicilio') {
-          msg = `Hola *${cliente}*, tu pedido de *EL BARRIL DEL PROFE* ha salido en camino a tu dirección. 🛵💨`;
-        } else {
-          msg = `Hola *${cliente}*, tu pedido en *EL BARRIL DEL PROFE* ya está listo para ser retirado / servido. ¡Te esperamos! 🔥`;
-        }
-      } else if (estado === 'Entregado') {
-        msg = `Hola *${cliente}*, tu pedido ha sido entregado con éxito. ¡Gracias por preferir *EL BARRIL DEL PROFE*! 🥩`;
-      } else {
-        msg = `Hola *${cliente}*, te saludamos de *EL BARRIL DEL PROFE*. Tu reserva se encuentra en estado: *${estado}*.`;
-      }
+    function loadInventory() {
+      callJSONP(`${SCRIPT_URL}?action=getInventory&key=123ab`, res => {
+        const tbody = document.getElementById('inventoryBody');
+        tbody.innerHTML = '';
+        res.data.forEach(i => {
+          const badge = i.alerta ? '<span class="alert-badge">REABASTECER</span>' : '<span style="color:#28a745;">OK</span>';
+          tbody.innerHTML += `<tr><td>${i.nombre}</td><td><strong>${Number(i.stockActual).toFixed(2)}</strong></td><td>${i.unidad}</td><td>${i.stockMinimo}</td><td>$${Number(i.costoUnitario || 0).toFixed(2)}</td><td>${badge}</td></tr>`;
+        });
+      });
+    }
 
-      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+    function restockIngrediente() {
+      const payload = {
+        action: 'restockInventory', key: '123ab',
+        ingNombre: document.getElementById('ingNombre').value,
+        cantidad: document.getElementById('ingCantidad').value,
+        unidad: document.getElementById('ingUnidad').value,
+        costoTotal: document.getElementById('ingCosto').value
+      };
+
+      fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+      .then(() => {
+        alert("Insumo reabastecido y egreso registrado.");
+        loadInventory();
+      });
+    }
+
+    function callJSONP(url, callback) {
+      const script = document.createElement('script');
+      window.handleResponse = callback;
+      script.src = url + '&callback=handleResponse&t=' + new Date().getTime();
+      document.body.appendChild(script);
     }
   </script>
 </body>
