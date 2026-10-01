@@ -4,40 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>El Barril del Profe - Pedidos & ERP</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  
   <style>
-    @font-face {
-      font-family: 'Bronco';
-      src: url('https://raw.githubusercontent.com/ortizcomunica-art/reservas/d5152a9f6ad1cc4b5d2bcc999870b5715b375cb4/BroncoPersonalUse.ttf') format('truetype');
-    }
-
     :root {
       --primary: #c82333; --dark: #121212; --panel-bg: #1e1e1e;
       --card-bg: #2a2a2a; --text: #f8f9fa; --text-muted: #aaa;
       --border: #333; --accent: #ffc107; --success: #28a745;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
     body { background-color: var(--dark); color: var(--text); }
-
-    h1, h2, h3 { font-family: 'Bronco', sans-serif; letter-spacing: 1px; }
-
-    header {
-      background: rgba(0,0,0,0.9); padding: 10px 5%; display: flex;
-      justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000;
-      border-bottom: 1px solid var(--border);
-    }
-    .brand img { height: 50px; }
-
+    
+    header { background: rgba(0,0,0,0.9); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; border-bottom: 1px solid var(--border); }
     nav { display: flex; gap: 15px; align-items: center; }
     nav a { color: white; text-decoration: none; font-weight: bold; }
-
     .admin-btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; }
     .admin-btn:hover { background: var(--accent); color: #000; }
 
-    .hero { text-align: center; padding: 50px 20px; background: #000; }
-    .hero h1 { font-size: 2.8rem; color: white; }
+    .hero { text-align: center; padding: 40px 20px; background: #000; border-bottom: 1px solid var(--border); }
+    .hero h1 { font-size: 2.2rem; color: white; }
     .hero h1 span { color: var(--accent); }
 
     .order-layout { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 30px; max-width: 1200px; margin: 30px auto; padding: 0 20px; }
@@ -45,24 +28,21 @@
     
     .product { background: var(--card-bg); padding: 15px; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px; position: relative; }
     .product .price { position: absolute; top: 15px; right: 15px; font-weight: bold; color: var(--accent); }
-
     .quantity { display: flex; align-items: center; background: #111; border-radius: 4px; display: inline-flex; }
     .quantity button { background: none; border: none; color: white; width: 30px; height: 30px; cursor: pointer; }
     .quantity span { width: 30px; text-align: center; font-weight: bold; }
-
     .add-button { background: var(--primary); border: none; color: white; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-weight: bold; }
 
     .form-group { margin-bottom: 15px; }
     .form-group label { display: block; margin-bottom: 5px; color: var(--text-muted); font-size: 0.9rem; }
     .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; background: #111; border: 1px solid var(--border); border-radius: 6px; color: white; }
-
     .submit-button { width: 100%; background: var(--success); border: none; color: white; padding: 14px; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 15px; }
 
     /* Modal Admin */
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2000; justify-content: center; align-items: center; }
-    .modal-content { background: var(--panel-bg); padding: 25px; border-radius: 10px; max-width: 950px; width: 95%; border: 1px solid var(--border); max-height: 90vh; overflow-y: auto; }
+    .modal-content { background: var(--panel-bg); padding: 25px; border-radius: 10px; max-width: 1000px; width: 95%; border: 1px solid var(--border); max-height: 90vh; overflow-y: auto; }
     .modal-close { background: var(--primary); border: none; color: white; padding: 8px 16px; border-radius: 4px; cursor: pointer; float: right; }
-
+    
     .admin-tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
     .admin-tab { background: #111; color: white; border: 1px solid var(--border); padding: 8px 16px; border-radius: 4px; cursor: pointer; }
     .admin-tab.active { background: var(--accent); color: black; font-weight: bold; }
@@ -70,49 +50,48 @@
     .admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem; }
     .admin-table th, .admin-table td { border: 1px solid var(--border); padding: 8px; text-align: left; }
     .admin-table th { background: #111; color: var(--accent); }
-
     .alert-badge { background: #dc3545; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; }
+    .btn-status { background: #333; color: white; border: 1px solid #555; padding: 4px 8px; border-radius: 4px; cursor: pointer; }
+    .btn-notify { background: #25D366; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-weight: bold; text-decoration: none; display: inline-block; }
   </style>
 </head>
 <body>
 
   <header>
-    <a href="#" class="brand">
-      <img src="https://raw.githubusercontent.com/ortizcomunica-art/reservas/d5152a9f6ad1cc4b5d2bcc999870b5715b375cb4/LOGO.png" alt="Logo">
-    </a>
+    <div style="font-size:1.4rem; font-weight:bold; color:var(--accent);">EL BARRIL DEL PROFE</div>
     <nav>
-      <a href="#pedido">PEDIDO</a>
+      <a href="#pedido">MENÚ Y RESERVA</a>
       <button class="admin-btn" onclick="openAdminModal()">ADMINISTRADOR / ERP</button>
     </nav>
   </header>
 
   <section class="hero">
-    <h1>EL BARRIL DEL PROFE<br><span>SOLO VIERNES, SÁBADO Y DOMINGO</span></h1>
+    <h1>EL BARRIL DEL PROFE<br><span>ATENCIÓN: VIERNES, SÁBADO Y DOMINGO</span></h1>
   </section>
 
   <div class="order-layout" id="pedido">
-    <!-- MENÚ -->
+    <!-- MENÚ RESTAURADO -->
     <div class="panel">
-      <h3>Menú Disponibles</h3>
+      <h3>Platos Principales y Acompañantes</h3><br>
       
       <div class="product">
         <span class="price">$5.50</span>
-        <h4>Chicharrón</h4>
-        <p style="font-size:0.8rem; color:var(--text-muted);">200g carne + plátano/papa + ensalada</p>
+        <h4>Plato de Chicharrón</h4>
+        <p style="font-size:0.8rem; color:var(--text-muted);">Acompañado de plátano/papa y ensalada</p>
         <div style="display:flex; justify-content:space-between; margin-top:10px;">
           <div class="quantity">
             <button onclick="changeQty('chicharron', -1)">−</button>
             <span id="qty-chicharron">0</span>
             <button onclick="changeQty('chicharron', 1)">+</button>
           </div>
-          <button class="add-button" onclick="addProduct('PROD-001', 'Chicharrón', 5.50, 'chicharron')">AGREGAR</button>
+          <button class="add-button" onclick="addProduct('PROD-001', 'Plato Chicharrón', 5.50, 'chicharron')">AGREGAR</button>
         </div>
       </div>
 
       <div class="product">
         <span class="price">$6.50</span>
         <h4>Costillar BBQ</h4>
-        <p style="font-size:0.8rem; color:var(--text-muted);">350g carne + plátano/papa + ensalada</p>
+        <p style="font-size:0.8rem; color:var(--text-muted);">Acompañado de plátano/papa y ensalada</p>
         <div style="display:flex; justify-content:space-between; margin-top:10px;">
           <div class="quantity">
             <button onclick="changeQty('costillar', -1)">−</button>
@@ -122,24 +101,62 @@
           <button class="add-button" onclick="addProduct('PROD-002', 'Costillar BBQ', 6.50, 'costillar')">AGREGAR</button>
         </div>
       </div>
+
+      <div class="product">
+        <span class="price">$1.50</span>
+        <h4>Choclo con Queso</h4>
+        <div style="display:flex; justify-content:space-between; margin-top:10px;">
+          <div class="quantity">
+            <button onclick="changeQty('choclo', -1)">−</button>
+            <span id="qty-choclo">0</span>
+            <button onclick="changeQty('choclo', 1)">+</button>
+          </div>
+          <button class="add-button" onclick="addProduct('PROD-003', 'Choclo con Queso', 1.50, 'choclo')">AGREGAR</button>
+        </div>
+      </div>
+
+      <div class="product">
+        <span class="price">$1.50</span>
+        <h4>Plátano Madurado con Queso</h4>
+        <div style="display:flex; justify-content:space-between; margin-top:10px;">
+          <div class="quantity">
+            <button onclick="changeQty('platano', -1)">−</button>
+            <span id="qty-platano">0</span>
+            <button onclick="changeQty('platano', 1)">+</button>
+          </div>
+          <button class="add-button" onclick="addProduct('PROD-004', 'Plátano Madurado', 1.50, 'platano')">AGREGAR</button>
+        </div>
+      </div>
+
+      <div class="product">
+        <span class="price">$2.00</span>
+        <h4>Gaseosa Personal</h4>
+        <div style="display:flex; justify-content:space-between; margin-top:10px;">
+          <div class="quantity">
+            <button onclick="changeQty('gaseosa', -1)">−</button>
+            <span id="qty-gaseosa">0</span>
+            <button onclick="changeQty('gaseosa', 1)">+</button>
+          </div>
+          <button class="add-button" onclick="addProduct('PROD-006', 'Gaseosa Personal', 2.00, 'gaseosa')">AGREGAR</button>
+        </div>
+      </div>
     </div>
 
-    <!-- DATOS DE RESERVA -->
+    <!-- FORMULARIO DE RESERVA -->
     <div class="panel">
-      <h3>Reserva tu Pedido</h3>
+      <h3>Datos para tu Pedido</h3><br>
       <div class="form-group">
         <label>Nombre del cliente *</label>
         <input id="customerName" type="text" required>
       </div>
       <div class="form-group">
-        <label>Número de celular *</label>
-        <input id="phone" type="tel" required>
+        <label>Celular (WhatsApp) *</label>
+        <input id="phone" type="tel" placeholder="09XXXXXXXX" required>
       </div>
       <div class="form-group">
-        <label>Fecha de Reserva (Solo Viernes, Sábado o Domingo) *</label>
+        <label>Fecha de Reserva (Viernes, Sábado o Domingo) *</label>
         <input id="orderDate" type="date" onchange="validateWeekend(this)">
       </div>
-
       <div class="form-group">
         <label>Modalidad *</label>
         <select id="deliveryMode">
@@ -161,8 +178,8 @@
   <div id="adminModal" class="modal">
     <div class="modal-content">
       <div class="admin-tabs">
-        <button class="admin-tab active" onclick="switchAdminTab('ordersTab')">📋 Reservas</button>
-        <button class="admin-tab" onclick="switchAdminTab('inventoryTab')">📦 Inventario & Insumos</button>
+        <button class="admin-tab active" onclick="switchAdminTab('ordersTab')">📋 Modificar / Notificar Pedidos</button>
+        <button class="admin-tab" onclick="switchAdminTab('inventoryTab')">📦 Cargar Inventario & Insumos</button>
       </div>
 
       <div id="adminAuth">
@@ -170,37 +187,80 @@
         <button onclick="loginAdmin()" style="background:var(--primary); color:white; padding:8px 16px; border:none; cursor:pointer;">Entrar</button>
       </div>
 
-      <!-- TAB RESERVAS -->
+      <!-- TAB GESTIÓN DE PEDIDOS -->
       <div id="ordersTab" style="display:none;">
-        <button onclick="loadOrders()" style="background:#333; color:white; padding:5px 10px; border:1px solid #555; margin-bottom:10px; cursor:pointer;">🔄 Actualizar</button>
-        <table class="admin-table">
-          <thead>
-            <tr><th>ID</th><th>Cliente</th><th>Teléfono</th><th>Modalidad</th><th>Total</th><th>Estado</th><th>Acción</th></tr>
-          </thead>
-          <tbody id="ordersBody"></tbody>
-        </table>
+        <button onclick="loadOrders()" style="background:#333; color:white; padding:5px 10px; border:1px solid #555; margin-bottom:10px; cursor:pointer;">🔄 Actualizar Pedidos</button>
+        <div style="overflow-x:auto;">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>Teléfono</th>
+                <th>Detalle</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th>Acciones / Notificar</th>
+              </tr>
+            </thead>
+            <tbody id="ordersBody"></tbody>
+          </table>
+        </div>
       </div>
 
-      <!-- TAB INVENTARIO Y REABASTECIMIENTO -->
+      <!-- TAB INVENTARIO & INSUMOS MEJORADO -->
       <div id="inventoryTab" style="display:none;">
         <div style="background:#111; padding:15px; border-radius:6px; margin-bottom:15px; border:1px solid var(--accent);">
-          <h4 style="color:var(--accent); margin-bottom:10px;">➕ Cargar Nueva Compra / Reabastecer Insumo</h4>
-          <div style="display:grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap:10px;">
-            <input id="ingNombre" type="text" placeholder="Ej. Panceta" style="padding:8px; background:#222; color:white; border:1px solid #444;">
-            <input id="ingCantidad" type="number" placeholder="Cantidad" style="padding:8px; background:#222; color:white; border:1px solid #444;">
-            <input id="ingUnidad" type="text" placeholder="Unidad (lbs, un, kg)" style="padding:8px; background:#222; color:white; border:1px solid #444;">
-            <input id="ingCosto" type="number" placeholder="Costo Total $" style="padding:8px; background:#222; color:white; border:1px solid #444;">
+          <h4 style="color:var(--accent); margin-bottom:10px;">➕ Cargar Insumo / Registrar Compra</h4>
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:10px;">
+            <div>
+              <label style="font-size:0.75rem; color:#aaa;">Insumo/Producto:</label>
+              <select id="ingNombreSelect" onchange="autoFillInsumoData()" style="padding:8px; background:#222; color:white; border:1px solid #444; width:100%;">
+                <option value="">-- Seleccionar --</option>
+                <option value="Funda de Carbón">Funda de Carbón</option>
+                <option value="Costilla de Cerdo">Costilla de Cerdo</option>
+                <option value="Panceta de Cerdo">Panceta de Cerdo</option>
+                <option value="Cabeza de Plátano">Cabeza de Plátano</option>
+                <option value="Condimentos y Especias">Condimentos y Especias</option>
+                <option value="Salsa Mayonesa">Salsa Mayonesa</option>
+                <option value="Salsa BBQ">Salsa BBQ</option>
+                <option value="Salsa BBQ Honey Mustard">Salsa BBQ Honey Mustard</option>
+                <option value="Ají de Mango">Ají de Mango</option>
+                <option value="Papas Chauchas">Papas Chauchas</option>
+                <option value="Café Lojano 300g">Café Lojano 300g</option>
+                <option value="Gaseosas Personales">Gaseosas Personales</option>
+                <option value="Servilletas">Servilletas</option>
+                <option value="Bandeja Hot Dog 4x8">Bandeja Hot Dog 4x8</option>
+                <option value="Bandeja Mediana 21x14.5">Bandeja Mediana 21x14.5</option>
+                <option value="Cuchara Tenedor">Cuchara Tenedor</option>
+                <option value="Tomate y Lechuga">Tomate y Lechuga</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:0.75rem; color:#aaa;">Cantidad a ingresar:</label>
+              <input id="ingCantidad" type="number" placeholder="Ej. 10" oninput="calculateTotalCost()" style="padding:8px; background:#222; color:white; border:1px solid #444; width:100%;">
+            </div>
+            <div>
+              <label style="font-size:0.75rem; color:#aaa;">Unidad (Automático):</label>
+              <input id="ingUnidad" type="text" readonly style="padding:8px; background:#333; color:#aaa; border:1px solid #444; width:100%;">
+            </div>
+            <div>
+              <label style="font-size:0.75rem; color:#aaa;">Costo Total $ (Modificable):</label>
+              <input id="ingCosto" type="number" step="0.01" placeholder="0.00" style="padding:8px; background:#222; color:white; border:1px solid #444; width:100%;">
+            </div>
           </div>
-          <button onclick="restockIngrediente()" style="margin-top:10px; background:var(--success); color:white; padding:8px 16px; border:none; cursor:pointer; font-weight:bold;">REGISTRAR COMPRA</button>
+          <button onclick="restockIngrediente()" style="margin-top:12px; background:var(--success); color:white; padding:10px 20px; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">REGISTRAR COMPRA Y STOCK</button>
         </div>
 
-        <button onclick="loadInventory()" style="background:#333; color:white; padding:5px 10px; border:1px solid #555; margin-bottom:10px; cursor:pointer;">🔄 Actualizar Inventario</button>
-        <table class="admin-table">
-          <thead>
-            <tr><th>Insumo</th><th>Stock Actual</th><th>Unidad</th><th>Stock Mínimo</th><th>Costo Unit. Est.</th><th>Estado</th></tr>
-          </thead>
-          <tbody id="inventoryBody"></tbody>
-        </table>
+        <button onclick="loadInventory()" style="background:#333; color:white; padding:5px 10px; border:1px solid #555; margin-bottom:10px; cursor:pointer;">🔄 Actualizar Listado de Stock</button>
+        <div style="overflow-x:auto;">
+          <table class="admin-table">
+            <thead>
+              <tr><th>Insumo</th><th>Stock Actual</th><th>Unidad</th><th>Stock Mínimo</th><th>Costo Unit. Est.</th><th>Estado</th></tr>
+            </thead>
+            <tbody id="inventoryBody"></tbody>
+          </table>
+        </div>
       </div>
 
       <button class="modal-close" onclick="closeAdminModal()" style="margin-top:15px;">CERRAR</button>
@@ -209,19 +269,59 @@
 
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyUaX1iTktQgPBcBsERhZR-zWEsVYjqYB1-O1LVmvrLgmvt14EnuTUbsmp-r8nP7LPV/exec";
-    let cart = {};
-    let quantities = { chicharron: 0, costillar: 0 };
+    
+    // DATOS DE REFERENCIA DE MERCADO (QUITO) E INSUMOS
+    const INSUMOS_DB = {
+      "Funda de Carbón": { unidad: "usos", costoUnitario: 0.50 },
+      "Costilla de Cerdo": { unidad: "lbs", costoUnitario: 2.60 },
+      "Panceta de Cerdo": { unidad: "lbs", costoUnitario: 2.60 },
+      "Cabeza de Plátano": { unidad: "unidades", costoUnitario: 0.25 },
+      "Condimentos y Especias": { unidad: "usos", costoUnitario: 0.50 },
+      "Salsa Mayonesa": { unidad: "frascos", costoUnitario: 2.50 },
+      "Salsa BBQ": { unidad: "frascos", costoUnitario: 3.00 },
+      "Salsa BBQ Honey Mustard": { unidad: "frascos", costoUnitario: 3.50 },
+      "Ají de Mango": { unidad: "litros", costoUnitario: 4.00 },
+      "Papas Chauchas": { unidad: "lbs", costoUnitario: 0.60 },
+      "Café Lojano 300g": { unidad: "fundas", costoUnitario: 10.00 },
+      "Gaseosas Personales": { unidad: "unidades", costoUnitario: 0.50 },
+      "Servilletas": { unidad: "paquetes", costoUnitario: 1.20 },
+      "Bandeja Hot Dog 4x8": { unidad: "unidades", costoUnitario: 0.08 },
+      "Bandeja Mediana 21x14.5": { unidad: "unidades", costoUnitario: 0.12 },
+      "Cuchara Tenedor": { unidad: "paquetes", costoUnitario: 1.50 },
+      "Tomate y Lechuga": { unidad: "lotes", costoUnitario: 2.00 }
+    };
 
-    // CONTROL DE FECHAS: SOLO VIERNES (5), SÁBADO (6) Y DOMINGO (0)
+    let cart = {};
+    let quantities = { chicharron: 0, costillar: 0, choclo: 0, platano: 0, gaseosa: 0 };
+
     function validateWeekend(input) {
       if (!input.value) return;
-      const dateParts = input.value.split('-');
-      const selectedDate = new Date(dateParts[0], dateParts[1] - 1, dateParts[2]);
-      const day = selectedDate.getDay();
-
+      const parts = input.value.split('-');
+      const date = new Date(parts[0], parts[1] - 1, parts[2]);
+      const day = date.getDay();
       if (day !== 0 && day !== 5 && day !== 6) {
-        alert("Atención: El Barril del Profe solo atiende los días Viernes, Sábado y Domingo. Selecciona un día válido.");
+        alert("Atención: El Barril del Profe atiende exclusivamente Viernes, Sábado y Domingo. Selecciona otra fecha.");
         input.value = "";
+      }
+    }
+
+    function autoFillInsumoData() {
+      const selected = document.getElementById('ingNombreSelect').value;
+      if (INSUMOS_DB[selected]) {
+        document.getElementById('ingUnidad').value = INSUMOS_DB[selected].unidad;
+        calculateTotalCost();
+      } else {
+        document.getElementById('ingUnidad').value = "";
+        document.getElementById('ingCosto').value = "";
+      }
+    }
+
+    function calculateTotalCost() {
+      const selected = document.getElementById('ingNombreSelect').value;
+      const cant = parseFloat(document.getElementById('ingCantidad').value) || 0;
+      if (INSUMOS_DB[selected] && cant > 0) {
+        const totalSugerido = INSUMOS_DB[selected].costoUnitario * cant;
+        document.getElementById('ingCosto').value = totalSugerido.toFixed(2);
       }
     }
 
@@ -232,7 +332,7 @@
 
     function addProduct(id, name, price, key) {
       const qty = quantities[key];
-      if (qty <= 0) return alert('Selecciona una cantidad');
+      if (qty <= 0) return alert('Selecciona una cantidad antes de agregar.');
       cart[id] = { id: id, name: name, price: price, qty: qty };
       renderCart();
     }
@@ -259,7 +359,7 @@
       const date = document.getElementById('orderDate').value;
       const keys = Object.keys(cart);
 
-      if (!name || !phone || !date || keys.length === 0) return alert("Por favor completa los datos obligatorios y agrega productos.");
+      if (!name || !phone || !date || keys.length === 0) return alert("Por favor completa los campos requeridos y selecciona productos.");
 
       const payload = {
         customerName: name, phone: phone, orderDate: date,
@@ -270,11 +370,11 @@
       };
 
       fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
-      .then(() => alert("Reserva guardada con éxito. Descontando stock..."))
-      .catch(() => alert("Error al conectar con la base de datos."));
+      .then(() => alert("Reserva guardada con éxito."))
+      .catch(() => alert("Ocurrió un error al procesar tu solicitud."));
     }
 
-    // ERP Y ADMINISTRACIÓN
+    // ERP Y MODAL ADMIN
     function openAdminModal() { document.getElementById('adminModal').style.display = 'flex'; }
     function closeAdminModal() { document.getElementById('adminModal').style.display = 'none'; }
     
@@ -297,9 +397,35 @@
         const tbody = document.getElementById('ordersBody');
         tbody.innerHTML = '';
         res.data.forEach(o => {
-          tbody.innerHTML += `<tr><td>${o.id}</td><td>${o.cliente}</td><td>${o.telefono}</td><td>${o.modalidad}</td><td>$${o.total}</td><td>${o.estado}</td><td><button onclick="updateStatus('${o.id}')">Aprobar</button></td></tr>`;
+          const msg = encodeURIComponent(`Hola ${o.cliente}, confirmamos tu pedido en El Barril del Profe para el día ${o.fechaReserva}. Estado: ${o.estado}. Total: $${o.total}`);
+          const waLink = `https://wa.me/593${o.telefono.replace(/^0/, '')}?text=${msg}`;
+
+          tbody.innerHTML += `
+            <tr>
+              <td>${o.id}</td>
+              <td>${o.cliente}</td>
+              <td>${o.telefono}</td>
+              <td>${o.productos}</td>
+              <td>$${o.total}</td>
+              <td>
+                <select class="btn-status" onchange="changeOrderStatus('${o.id}', this.value)">
+                  <option value="Pendiente" ${o.estado==='Pendiente'?'selected':''}>Pendiente</option>
+                  <option value="Confirmado" ${o.estado==='Confirmado'?'selected':''}>Confirmado</option>
+                  <option value="En Preparación" ${o.estado==='En Preparación'?'selected':''}>En Preparación</option>
+                  <option value="Completado" ${o.estado==='Completado'?'selected':''}>Completado</option>
+                  <option value="Cancelado" ${o.estado==='Cancelado'?'selected':''}>Cancelado</option>
+                </select>
+              </td>
+              <td><a href="${waLink}" target="_blank" class="btn-notify">📲 Notificar</a></td>
+            </tr>`;
         });
       });
+    }
+
+    function changeOrderStatus(orderId, newStatus) {
+      const payload = { action: 'updateStatus', key: '123ab', orderId: orderId, newStatus: newStatus };
+      fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+      .then(() => alert("Estado actualizado correctamente."));
     }
 
     function loadInventory() {
@@ -314,17 +440,21 @@
     }
 
     function restockIngrediente() {
+      const nombre = document.getElementById('ingNombreSelect').value;
+      const cant = document.getElementById('ingCantidad').value;
+      const unidad = document.getElementById('ingUnidad').value;
+      const costo = document.getElementById('ingCosto').value;
+
+      if (!nombre || !cant) return alert("Por favor selecciona un insumo e ingresa la cantidad.");
+
       const payload = {
         action: 'restockInventory', key: '123ab',
-        ingNombre: document.getElementById('ingNombre').value,
-        cantidad: document.getElementById('ingCantidad').value,
-        unidad: document.getElementById('ingUnidad').value,
-        costoTotal: document.getElementById('ingCosto').value
+        ingNombre: nombre, cantidad: cant, unidad: unidad, costoTotal: costo
       };
 
       fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
       .then(() => {
-        alert("Insumo reabastecido y egreso registrado.");
+        alert("Compra e Insumo registrados con éxito en el inventario y gastos.");
         loadInventory();
       });
     }
