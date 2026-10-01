@@ -149,7 +149,7 @@
     .submit-button:hover { background: #218838; }
 
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; justify-content: center; align-items: center; }
-    .modal-content { background: var(--panel-bg); padding: 30px; border-radius: 10px; max-width: 700px; width: 90%; border: 1px solid var(--border); max-height: 90vh; overflow-y: auto; }
+    .modal-content { background: var(--panel-bg); padding: 30px; border-radius: 10px; max-width: 800px; width: 95%; border: 1px solid var(--border); max-height: 90vh; overflow-y: auto; }
     .modal-close { background: var(--primary); border: none; color: white; padding: 8px 16px; border-radius: 4px; cursor: pointer; margin-top: 15px; float: right; }
 
     .admin-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.85rem; }
@@ -403,7 +403,10 @@
         <button onclick="loginAdmin()" style="background:var(--primary); color:white; border:none; padding:10px 20px; border-radius:4px; cursor:pointer;">INGRESAR</button>
       </div>
       <div id="adminPanel" style="display:none;">
-        <p style="margin-bottom:10px; font-size:0.85rem; color:var(--text-muted);">Gestión de Reservas y Pedidos:</p>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <p style="font-size:0.85rem; color:var(--text-muted);">Gestión de Reservas y Pedidos:</p>
+          <button onclick="loadAdminOrders()" style="background:#333; color:white; border:1px solid var(--border); padding:4px 8px; border-radius:4px; cursor:pointer; font-size:0.75rem;">🔄 Actualizar</button>
+        </div>
         <div style="overflow-x:auto;">
           <table class="admin-table">
             <thead>
@@ -411,6 +414,7 @@
                 <th>ID</th>
                 <th>Cliente</th>
                 <th>Teléfono</th>
+                <th>Productos</th>
                 <th>Total</th>
                 <th>Estado</th>
                 <th>Acción</th>
@@ -428,7 +432,8 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxHHGCa_vOmYZCdnqnGt4BoGro9SHv5t9HjmRDNXTjix5pSpYHzn5ncvFkIeEI7TbGJ/exec";
+    // URL actualizada de tu Apps Script Web App
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyDnoOa0O9NgzfdXxSz3Agg84zG9puhNQFc68gDVq7p3RXKaAmhNA6a7B6iahBNm-EE/exec";
     
     let cart = {};
     let quantities = { chicharron: 0, costillar: 0, choclo: 0, platanos: 0, limonada: 0, gaseosa: 0 };
@@ -448,7 +453,7 @@
         alert('Selecciona una cantidad mayor a 0');
         return;
       }
-      cart[id] = { id, name, price, qty };
+      cart[id] = { id: id, name: name, price: price, qty: qty };
       renderCart();
     }
 
@@ -612,11 +617,17 @@
     }
 
     function loadAdminOrders() {
+      const tbody = document.getElementById('adminTableBody');
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Cargando reservas...</td></tr>';
+
       fetch(`${SCRIPT_URL}?action=getOrders&key=123ab`)
         .then(res => res.json())
         .then(res => {
           if (res.status === 'success') {
-            const tbody = document.getElementById('adminTableBody');
+            if (res.data.length === 0) {
+              tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No hay reservas registradas.</td></tr>';
+              return;
+            }
             tbody.innerHTML = '';
             res.data.forEach(o => {
               tbody.innerHTML += `
@@ -624,16 +635,22 @@
                   <td>${o.id}</td>
                   <td>${o.cliente}</td>
                   <td>${o.telefono}</td>
+                  <td>${o.productos || ''}</td>
                   <td>$${Number(o.total || 0).toFixed(2)}</td>
                   <td><span class="status-badge status-${o.estado}">${o.estado}</span></td>
                   <td>
-                    <button class="action-btn btn-approve" onclick="updateStatus('${o.id}', 'Aprobado')">✓</button>
-                    <button class="action-btn btn-reject" onclick="updateStatus('${o.id}', 'Rechazado')">✕</button>
+                    <button class="action-btn btn-approve" title="Aprobar" onclick="updateStatus('${o.id}', 'Aprobado')">✓</button>
+                    <button class="action-btn btn-reject" title="Rechazar" onclick="updateStatus('${o.id}', 'Rechazado')">✕</button>
                   </td>
                 </tr>
               `;
             });
+          } else {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--primary);">Error de autenticación o servidor.</td></tr>';
           }
+        })
+        .catch(err => {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--primary);">Error al conectar con la base de datos.</td></tr>';
         });
     }
 
@@ -642,9 +659,9 @@
         method: 'POST',
         mode: 'no-cors',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'updateStatus', key: '123ab', orderId, newStatus })
+        body: JSON.stringify({ action: 'updateStatus', key: '123ab', orderId: orderId, newStatus: newStatus })
       }).then(() => {
-        setTimeout(loadAdminOrders, 1000);
+        setTimeout(loadAdminOrders, 1200);
       });
     }
   </script>
