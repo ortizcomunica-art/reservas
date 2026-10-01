@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>El Barril del Profe - Reservas y Pedidos</title>
   <style>
-    /* Tipografía personalizada */
+    /* Tipografía personalizada desde GitHub */
     @font-face {
       font-family: 'BroncoPersonalUse';
       src: url('https://raw.githubusercontent.com/ortizcomunica-art/reservas/d5152a9f6ad1cc4b5d2bcc999870b5715b375cb4/BroncoPersonalUse.ttf') format('truetype');
@@ -15,62 +15,68 @@
 
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
 
     body {
       font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-      background-color: #121212; /* Fondo oscuro rústico */
+      background-color: #121212;
       color: #f1f1f1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
 
-    /* Tipografía en títulos principales */
-    .section-title h2, 
-    .panel-title h3,
-    .category-title {
-      font-family: 'BroncoPersonalUse', sans-serif;
-      letter-spacing: 1px;
+    /* HEADER */
+    header {
+      background-color: #1a1a1a;
+      border-bottom: 2px solid #d32f2f;
+      padding: 20px 15px;
+      text-align: center;
     }
 
-    /* Logo principal */
     .brand-logo {
-      max-width: 180px;
+      max-width: 170px;
       height: auto;
       display: block;
-      margin: 0 auto 15px auto;
-    }
-
-    .section-title {
-      text-align: center;
-      margin-bottom: 25px;
+      margin: 0 auto 10px auto;
     }
 
     .section-title small {
       color: #e5a638; /* Dorado */
       text-transform: uppercase;
-      letter-spacing: 1.5px;
+      letter-spacing: 2px;
+      font-size: 0.85em;
       font-weight: bold;
     }
 
     .section-title h2 {
+      font-family: 'BroncoPersonalUse', sans-serif;
       color: #d32f2f; /* Rojo parrilla */
       font-size: 2.2em;
-      margin: 5px 0 0 0;
+      margin-top: 5px;
+    }
+
+    /* CONTENIDO PRINCIPAL */
+    main {
+      flex: 1;
+      max-width: 1100px;
+      width: 100%;
+      margin: 25px auto;
+      padding: 0 15px;
     }
 
     .order-layout {
       display: flex;
       flex-wrap: wrap;
       gap: 20px;
-      max-width: 1100px;
-      margin: 0 auto;
     }
 
     .panel {
       flex: 1;
       min-width: 320px;
-      background: #1e1e1e; /* Tarjeta oscura */
+      background: #1e1e1e;
       padding: 20px;
       border-radius: 8px;
       border: 1px solid #333;
@@ -87,8 +93,9 @@
     }
 
     .panel-title h3 {
+      font-family: 'BroncoPersonalUse', sans-serif;
       margin: 0;
-      color: #e5a638; /* Dorado */
+      color: #e5a638;
       font-size: 1.5em;
     }
 
@@ -98,14 +105,16 @@
     }
 
     .category-title {
+      font-family: 'BroncoPersonalUse', sans-serif;
       font-size: 1.3em;
       margin-top: 20px;
       margin-bottom: 10px;
-      color: #e5a638; /* Dorado */
+      color: #e5a638;
       border-left: 4px solid #d32f2f;
       padding-left: 8px;
     }
 
+    /* TARJETAS DE PRODUCTOS */
     .product {
       background-color: #272727;
       border: 1px solid #3d3d3d;
@@ -123,7 +132,7 @@
     .price {
       float: right;
       font-weight: bold;
-      color: #e5a638; /* Dorado */
+      color: #e5a638;
       font-size: 1.1em;
     }
 
@@ -181,6 +190,7 @@
       background-color: #b71c1c;
     }
 
+    /* FORMULARIO Y CAMPOS */
     .form-group {
       margin-bottom: 14px;
     }
@@ -295,15 +305,21 @@
       letter-spacing: 0.5px;
     }
 
+    /* FOOTER / PIE DE PÁGINA */
+    footer {
+      background-color: #1a1a1a;
+      border-top: 2px solid #333;
+      padding: 20px 15px;
+      margin-top: auto;
+    }
+
     .info-grid {
       display: flex;
       justify-content: space-around;
       max-width: 1100px;
-      margin: 30px auto 0 auto;
-      background: #1e1e1e;
-      border: 1px solid #333;
-      padding: 15px;
-      border-radius: 8px;
+      margin: 0 auto;
+      flex-wrap: wrap;
+      gap: 15px;
     }
 
     .info-card {
@@ -320,304 +336,320 @@
       color: #ccc;
       font-size: 0.9em;
     }
+
+    .copyright {
+      text-align: center;
+      color: #666;
+      font-size: 0.8em;
+      margin-top: 15px;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Encabezado con Logo -->
-  <img 
-    src="https://raw.githubusercontent.com/ortizcomunica-art/reservas/d5152a9f6ad1cc4b5d2bcc999870b5715b375cb4/LOGO.png" 
-    alt="El Barril del Profe Logo" 
-    class="brand-logo"
-  >
-
-  <div class="section-title">
-    <small>Reserva tu pedido</small>
-    <h2>HAZ TU PEDIDO</h2>
-  </div>
-
-  <div class="order-layout">
-
-    <!-- MENU -->
-    <div class="panel">
-      <div class="panel-title">
-        <h3>MENÚ</h3>
-        <span>Sábado 10 de octubre</span>
-      </div>
-
-      <!-- CARNES -->
-      <div class="category-title">Carnes</div>
-      <div class="products">
-
-        <article class="product">
-          <span class="price">$5.50</span>
-          <h4>Chicharrón</h4>
-          <p class="product-description">200 g + plátano/papas + ensalada</p>
-          <div class="product-controls">
-            <div class="quantity">
-              <button type="button" onclick="changeQty('chicharron', -1)">−</button>
-              <span id="qty-chicharron">0</span>
-              <button type="button" onclick="changeQty('chicharron', 1)">+</button>
-            </div>
-            <button type="button" class="add-button" onclick="addProduct('chicharron')">AGREGAR</button>
-          </div>
-        </article>
-
-        <article class="product">
-          <span class="price">$6.50</span>
-          <h4>Costillar BBQ</h4>
-          <p class="product-description">350 g + plátano/papas + ensalada</p>
-          <div class="product-controls">
-            <div class="quantity">
-              <button type="button" onclick="changeQty('costillar', -1)">−</button>
-              <span id="qty-costillar">0</span>
-              <button type="button" onclick="changeQty('costillar', 1)">+</button>
-            </div>
-            <button type="button" class="add-button" onclick="addProduct('costillar')">AGREGAR</button>
-          </div>
-        </article>
-
-      </div>
-
-      <!-- ACOMPAÑANTES -->
-      <div class="category-title">Acompañantes</div>
-      <div class="products">
-
-        <article class="product">
-          <span class="price">$1.50</span>
-          <h4>Choclo</h4>
-          <p class="product-description">Con queso y mayonesa</p>
-          <div class="product-controls">
-            <div class="quantity">
-              <button type="button" onclick="changeQty('choclo', -1)">−</button>
-              <span id="qty-choclo">0</span>
-              <button type="button" onclick="changeQty('choclo', 1)">+</button>
-            </div>
-            <button type="button" class="add-button" onclick="addProduct('choclo')">AGREGAR</button>
-          </div>
-        </article>
-
-        <article class="product">
-          <span class="price">$2.00</span>
-          <h4>Plátanos asados</h4>
-          <p class="product-description">Queso, sal prieta o mayonesa de la casa</p>
-          <div class="product-controls">
-            <div class="quantity">
-              <button type="button" onclick="changeQty('platanos', -1)">−</button>
-              <span id="qty-platanos">0</span>
-              <button type="button" onclick="changeQty('platanos', 1)">+</button>
-            </div>
-            <button type="button" class="add-button" onclick="addProduct('platanos')">AGREGAR</button>
-          </div>
-        </article>
-
-      </div>
-
-      <!-- BEBIDAS -->
-      <div class="category-title">Bebidas</div>
-      <div class="products">
-
-        <article class="product">
-          <span class="price">$5.00</span>
-          <h4>Jarra de limonada</h4>
-          <p class="product-description">Jarra de limonada</p>
-          <div class="product-controls">
-            <div class="quantity">
-              <button type="button" onclick="changeQty('limonada', -1)">−</button>
-              <span id="qty-limonada">0</span>
-              <button type="button" onclick="changeQty('limonada', 1)">+</button>
-            </div>
-            <button type="button" class="add-button" onclick="addProduct('limonada')">AGREGAR</button>
-          </div>
-        </article>
-
-        <article class="product">
-          <span class="price">$2.00</span>
-          <h4>Gaseosa personal</h4>
-          <p class="product-description">Gaseosa personal</p>
-          <div class="product-controls">
-            <div class="quantity">
-              <button type="button" onclick="changeQty('gaseosa', -1)">−</button>
-              <span id="qty-gaseosa">0</span>
-              <button type="button" onclick="changeQty('gaseosa', 1)">+</button>
-            </div>
-            <button type="button" class="add-button" onclick="addProduct('gaseosa')">AGREGAR</button>
-          </div>
-        </article>
-
-        <article class="product">
-          <span class="price">$1.00</span>
-          <h4>Café lojano</h4>
-          <p class="product-description">Café lojano</p>
-          <div class="product-controls">
-            <div class="quantity">
-              <button type="button" onclick="changeQty('cafe', -1)">−</button>
-              <span id="qty-cafe">0</span>
-              <button type="button" onclick="changeQty('cafe', 1)">+</button>
-            </div>
-            <button type="button" class="add-button" onclick="addProduct('cafe')">AGREGAR</button>
-          </div>
-        </article>
-
-      </div>
+  <!-- HEADER / CABECERA DE LA PÁGINA -->
+  <header>
+    <img 
+      src="https://raw.githubusercontent.com/ortizcomunica-art/reservas/d5152a9f6ad1cc4b5d2bcc999870b5715b375cb4/LOGO.png" 
+      alt="El Barril del Profe Logo" 
+      class="brand-logo"
+    >
+    <div class="section-title">
+      <small>Reserva tu pedido</small>
+      <h2>HAZ TU PEDIDO</h2>
     </div>
+  </header>
 
-    <!-- FORMULARIO / CARRITO -->
-    <div class="panel">
-      <div class="panel-title">
-        <h3>TU PEDIDO</h3>
-        <span>Reserva</span>
-      </div>
+  <!-- CONTENEDOR PRINCIPAL DE COMPRA -->
+  <main>
+    <div class="order-layout">
 
-      <!-- DATOS CLIENTE -->
-      <div class="form-group">
-        <label for="customerName">Nombre del cliente <span class="required">*</span></label>
-        <input id="customerName" type="text" placeholder="Ej. Juan Pérez" autocomplete="name" required>
-      </div>
+      <!-- PANEL DE MENÚ DE PRODUCTOS -->
+      <div class="panel">
+        <div class="panel-title">
+          <h3>MENÚ</h3>
+          <span>Sábado 10 de octubre</span>
+        </div>
 
-      <div class="form-group">
-        <label for="phone">Número de celular <span class="required">*</span></label>
-        <input id="phone" type="tel" placeholder="0991234567" autocomplete="tel" required>
-      </div>
+        <!-- CARNES -->
+        <div class="category-title">Carnes</div>
+        <div class="products">
 
-      <div class="form-group">
-        <label for="orderDate">Fecha del pedido</label>
-        <input id="orderDate" type="date" value="2026-10-10">
-      </div>
+          <article class="product">
+            <span class="price">$5.50</span>
+            <h4>Chicharrón</h4>
+            <p class="product-description">200 g + plátano/papas + ensalada</p>
+            <div class="product-controls">
+              <div class="quantity">
+                <button type="button" onclick="changeQty('chicharron', -1)">−</button>
+                <span id="qty-chicharron">0</span>
+                <button type="button" onclick="changeQty('chicharron', 1)">+</button>
+              </div>
+              <button type="button" class="add-button" onclick="addProduct('chicharron')">AGREGAR</button>
+            </div>
+          </article>
 
-      <!-- MODALIDAD -->
-      <div class="form-group">
-        <label>Modalidad <span class="required">*</span></label>
-        <div class="delivery-options">
-          <div class="delivery-option">
-            <input type="radio" id="takeaway" name="delivery" value="Para llevar" onchange="toggleDeliveryBox()">
-            <label for="takeaway">Para llevar</label>
-          </div>
-          <div class="delivery-option">
-            <input type="radio" id="local" name="delivery" value="En el local" checked onchange="toggleDeliveryBox()">
-            <label for="local">En el local</label>
-          </div>
-          <div class="delivery-option">
-            <input type="radio" id="delivery" name="delivery" value="A domicilio" onchange="toggleDeliveryBox()">
-            <label for="delivery">A domicilio</label>
-          </div>
+          <article class="product">
+            <span class="price">$6.50</span>
+            <h4>Costillar BBQ</h4>
+            <p class="product-description">350 g + plátano/papas + ensalada</p>
+            <div class="product-controls">
+              <div class="quantity">
+                <button type="button" onclick="changeQty('costillar', -1)">−</button>
+                <span id="qty-costillar">0</span>
+                <button type="button" onclick="changeQty('costillar', 1)">+</button>
+              </div>
+              <button type="button" class="add-button" onclick="addProduct('costillar')">AGREGAR</button>
+            </div>
+          </article>
+
+        </div>
+
+        <!-- ACOMPAÑANTES -->
+        <div class="category-title">Acompañantes</div>
+        <div class="products">
+
+          <article class="product">
+            <span class="price">$1.50</span>
+            <h4>Choclo</h4>
+            <p class="product-description">Con queso y mayonesa</p>
+            <div class="product-controls">
+              <div class="quantity">
+                <button type="button" onclick="changeQty('choclo', -1)">−</button>
+                <span id="qty-choclo">0</span>
+                <button type="button" onclick="changeQty('choclo', 1)">+</button>
+              </div>
+              <button type="button" class="add-button" onclick="addProduct('choclo')">AGREGAR</button>
+            </div>
+          </article>
+
+          <article class="product">
+            <span class="price">$2.00</span>
+            <h4>Plátanos asados</h4>
+            <p class="product-description">Queso, sal prieta o mayonesa de la casa</p>
+            <div class="product-controls">
+              <div class="quantity">
+                <button type="button" onclick="changeQty('platanos', -1)">−</button>
+                <span id="qty-platanos">0</span>
+                <button type="button" onclick="changeQty('platanos', 1)">+</button>
+              </div>
+              <button type="button" class="add-button" onclick="addProduct('platanos')">AGREGAR</button>
+            </div>
+          </article>
+
+        </div>
+
+        <!-- BEBIDAS -->
+        <div class="category-title">Bebidas</div>
+        <div class="products">
+
+          <article class="product">
+            <span class="price">$5.00</span>
+            <h4>Jarra de limonada</h4>
+            <p class="product-description">Jarra de limonada</p>
+            <div class="product-controls">
+              <div class="quantity">
+                <button type="button" onclick="changeQty('limonada', -1)">−</button>
+                <span id="qty-limonada">0</span>
+                <button type="button" onclick="changeQty('limonada', 1)">+</button>
+              </div>
+              <button type="button" class="add-button" onclick="addProduct('limonada')">AGREGAR</button>
+            </div>
+          </article>
+
+          <article class="product">
+            <span class="price">$2.00</span>
+            <h4>Gaseosa personal</h4>
+            <p class="product-description">Gaseosa personal</p>
+            <div class="product-controls">
+              <div class="quantity">
+                <button type="button" onclick="changeQty('gaseosa', -1)">−</button>
+                <span id="qty-gaseosa">0</span>
+                <button type="button" onclick="changeQty('gaseosa', 1)">+</button>
+              </div>
+              <button type="button" class="add-button" onclick="addProduct('gaseosa')">AGREGAR</button>
+            </div>
+          </article>
+
+          <article class="product">
+            <span class="price">$1.00</span>
+            <h4>Café lojano</h4>
+            <p class="product-description">Café lojano</p>
+            <div class="product-controls">
+              <div class="quantity">
+                <button type="button" onclick="changeQty('cafe', -1)">−</button>
+                <span id="qty-cafe">0</span>
+                <button type="button" onclick="changeQty('cafe', 1)">+</button>
+              </div>
+              <button type="button" class="add-button" onclick="addProduct('cafe')">AGREGAR</button>
+            </div>
+          </article>
+
         </div>
       </div>
 
-      <!-- DOMICILIO + MAPA -->
-      <div id="deliveryBox" style="display: none;">
-        <div class="map-header">
-          <strong>Ubicación de nuestro local:</strong>
+      <!-- PANEL DE CARRITO Y DATOS -->
+      <div class="panel">
+        <div class="panel-title">
+          <h3>TU PEDIDO</h3>
+          <span>Reserva</span>
         </div>
 
-        <!-- Iframe del mapa del local -->
-        <iframe 
-          src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d370.04279238091397!2d-78.48703013498067!3d-0.12422216520351366!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses!2sec!4v1790874310553!5m2!1ses!2sec" 
-          width="100%" 
-          height="200" 
-          style="border:0; border-radius: 8px;" 
-          allowfullscreen="" 
-          loading="lazy" 
-          referrerpolicy="strict-origin-when-cross-origin">
-        </iframe>
-
-        <div class="map-header" style="margin-top: 15px;">
-          <strong>Ubicación de entrega del cliente</strong>
-          <button type="button" class="location-button" onclick="getLocation()">USAR MI UBICACIÓN</button>
-        </div>
-
-        <div id="mapStatus" class="map-status">
-          Ingresa tus coordenadas o usa tu ubicación actual para calcular la tarifa y tiempo estimado de entrega.
+        <!-- DATOS DEL CLIENTE -->
+        <div class="form-group">
+          <label for="customerName">Nombre del cliente <span class="required">*</span></label>
+          <input id="customerName" type="text" placeholder="Ej. Juan Pérez" autocomplete="name" required>
         </div>
 
         <div class="form-group">
-          <label for="sector">Sector</label>
-          <input id="sector" type="text" value="Sector norte">
+          <label for="phone">Número de celular <span class="required">*</span></label>
+          <input id="phone" type="tel" placeholder="0991234567" autocomplete="tel" required>
         </div>
 
         <div class="form-group">
-          <label for="address">Dirección <span class="required">*</span></label>
-          <input id="address" type="text" placeholder="Calle principal, número y calle secundaria">
+          <label for="orderDate">Fecha del pedido</label>
+          <input id="orderDate" type="date" value="2026-10-10">
         </div>
 
+        <!-- MODALIDAD -->
         <div class="form-group">
-          <label for="reference">Referencia</label>
-          <textarea id="reference" placeholder="Ej. Casa blanca, junto al parque..."></textarea>
+          <label>Modalidad <span class="required">*</span></label>
+          <div class="delivery-options">
+            <div class="delivery-option">
+              <input type="radio" id="takeaway" name="delivery" value="Para llevar" onchange="toggleDeliveryBox()">
+              <label for="takeaway">Para llevar</label>
+            </div>
+            <div class="delivery-option">
+              <input type="radio" id="local" name="delivery" value="En el local" checked onchange="toggleDeliveryBox()">
+              <label for="local">En el local</label>
+            </div>
+            <div class="delivery-option">
+              <input type="radio" id="delivery" name="delivery" value="A domicilio" onchange="toggleDeliveryBox()">
+              <label for="delivery">A domicilio</label>
+            </div>
+          </div>
         </div>
 
-        <div id="deliveryInfo" style="display:none;"></div>
+        <!-- CAJA DE DOMICILIO + MAPA -->
+        <div id="deliveryBox" style="display: none;">
+          <div class="map-header">
+            <strong>Ubicación de nuestro local:</strong>
+          </div>
+
+          <!-- Iframe del mapa -->
+          <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d370.04279238091397!2d-78.48703013498067!3d-0.12422216520351366!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1ses!2sec!4v1790874310553!5m2!1ses!2sec" 
+            width="100%" 
+            height="200" 
+            style="border:0; border-radius: 8px;" 
+            allowfullscreen="" 
+            loading="lazy" 
+            referrerpolicy="strict-origin-when-cross-origin">
+          </iframe>
+
+          <div class="map-header" style="margin-top: 15px;">
+            <strong>Ubicación de entrega del cliente</strong>
+            <button type="button" class="location-button" onclick="getLocation()">USAR MI UBICACIÓN</button>
+          </div>
+
+          <div id="mapStatus" class="map-status">
+            Ingresa tus coordenadas o usa tu ubicación actual para calcular la tarifa y tiempo estimado de entrega.
+          </div>
+
+          <div class="form-group">
+            <label for="sector">Sector</label>
+            <input id="sector" type="text" value="Sector norte">
+          </div>
+
+          <div class="form-group">
+            <label for="address">Dirección <span class="required">*</span></label>
+            <input id="address" type="text" placeholder="Calle principal, número y calle secundaria">
+          </div>
+
+          <div class="form-group">
+            <label for="reference">Referencia</label>
+            <textarea id="reference" placeholder="Ej. Casa blanca, junto al parque..."></textarea>
+          </div>
+
+          <div id="deliveryInfo" style="display:none;"></div>
+        </div>
+
+        <!-- CARRITO DE COMPRAS -->
+        <div class="category-title" style="margin-top:25px;">Productos seleccionados</div>
+        <div id="cart">
+          <div class="cart-empty">Todavía no has agregado productos.</div>
+        </div>
+
+        <!-- TOTALES -->
+        <div class="totals">
+          <div class="total-row">
+            <span>Subtotal</span>
+            <strong id="subtotal">$0.00</strong>
+          </div>
+          <div class="total-row">
+            <span>Envío</span>
+            <strong id="deliveryFee">$0.00</strong>
+          </div>
+          <div class="total-row final">
+            <span>TOTAL</span>
+            <strong id="total">$0.00</strong>
+          </div>
+        </div>
+
+        <!-- FORMA DE PAGO -->
+        <div class="category-title" style="margin-top:25px;">Forma de pago</div>
+        <div class="payment-options">
+          <div class="payment-option">
+            <input id="cash" type="radio" name="payment" value="Efectivo" checked>
+            <label for="cash">Efectivo</label>
+          </div>
+          <div class="payment-option">
+            <input id="transfer" type="radio" name="payment" value="Transferencia">
+            <label for="transfer">Transferencia</label>
+          </div>
+        </div>
+
+        <!-- MARKETING -->
+        <label class="checkbox-line">
+          <input id="marketingConsent" type="checkbox">
+          <span>Acepto recibir promociones y novedades de EL BARRIL DEL PROFE mediante mi número de celular.</span>
+        </label>
+
+        <!-- NOTAS -->
+        <div class="form-group" style="margin-top:18px;">
+          <label for="notes">Observaciones del pedido</label>
+          <textarea id="notes" placeholder="Alguna indicación adicional..."></textarea>
+        </div>
+
+        <!-- BOTÓN FINAL -->
+        <button id="submitButton" type="button" class="submit-button" onclick="submitOrder()">
+          RESERVAR Y ENVIAR A WHATSAPP
+        </button>
+
       </div>
-
-      <!-- CARRITO -->
-      <div class="category-title" style="margin-top:25px;">Productos seleccionados</div>
-      <div id="cart">
-        <div class="cart-empty">Todavía no has agregado productos.</div>
-      </div>
-
-      <!-- TOTALES -->
-      <div class="totals">
-        <div class="total-row">
-          <span>Subtotal</span>
-          <strong id="subtotal">$0.00</strong>
-        </div>
-        <div class="total-row">
-          <span>Envío</span>
-          <strong id="deliveryFee">$0.00</strong>
-        </div>
-        <div class="total-row final">
-          <span>TOTAL</span>
-          <strong id="total">$0.00</strong>
-        </div>
-      </div>
-
-      <!-- PAGO -->
-      <div class="category-title" style="margin-top:25px;">Forma de pago</div>
-      <div class="payment-options">
-        <div class="payment-option">
-          <input id="cash" type="radio" name="payment" value="Efectivo" checked>
-          <label for="cash">Efectivo</label>
-        </div>
-        <div class="payment-option">
-          <input id="transfer" type="radio" name="payment" value="Transferencia">
-          <label for="transfer">Transferencia</label>
-        </div>
-      </div>
-
-      <!-- PROMOCIONES -->
-      <label class="checkbox-line">
-        <input id="marketingConsent" type="checkbox">
-        <span>Acepto recibir promociones y novedades de EL BARRIL DEL PROFE mediante mi número de celular.</span>
-      </label>
-
-      <!-- OBSERVACIONES -->
-      <div class="form-group" style="margin-top:18px;">
-        <label for="notes">Observaciones del pedido</label>
-        <textarea id="notes" placeholder="Alguna indicación adicional..."></textarea>
-      </div>
-
-      <!-- BOTÓN -->
-      <button id="submitButton" type="button" class="submit-button" onclick="submitOrder()">
-        RESERVAR Y ENVIAR A WHATSAPP
-      </button>
-
     </div>
-  </div>
+  </main>
 
-  <!-- INFORMACIÓN -->
-  <div class="info-grid">
-    <div class="info-card">
-      <strong>Fecha</strong>
-      <span>Sábado 10 de octubre de 2026</span>
+  <!-- FOOTER / PIE DE PÁGINA -->
+  <footer>
+    <div class="info-grid">
+      <div class="info-card">
+        <strong>Fecha</strong>
+        <span>Sábado 10 de octubre de 2026</span>
+      </div>
+      <div class="info-card">
+        <strong>Atención</strong>
+        <span>Desde las 11:00</span>
+      </div>
+      <div class="info-card">
+        <strong>Pedidos</strong>
+        <span>0992506756</span>
+      </div>
     </div>
-    <div class="info-card">
-      <strong>Atención</strong>
-      <span>Desde las 11:00</span>
+    <div class="copyright">
+      &copy; 2026 El Barril del Profe. Todos los derechos reservados.
     </div>
-    <div class="info-card">
-      <strong>Pedidos</strong>
-      <span>0992506756</span>
-    </div>
-  </div>
+  </footer>
 
   <script src="script.js"></script>
 </body>
