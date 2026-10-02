@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow"><title>Administración - El Barril del Profe</title>
+<style>
+:root{--p:#c82333;--bg:#121212;--pn:#1e1e1e;--cd:#2a2a2a;--tx:#f8f9fa;--mu:#b5b5b5;--bd:#333;--ac:#ffc107;--ok:#2fb350}
+*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--tx);font:15px/1.5 'Segoe UI',system-ui,sans-serif}
+button,input,select{font:inherit}button{cursor:pointer}
+input,select{width:100%;padding:10px;background:#111;color:#fff;border:1px solid var(--bd);border-radius:6px}
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+.b{background:var(--p);color:#fff;border:0;border-radius:6px;padding:9px 14px;font-weight:700;min-height:40px}.b.g{background:#333}.b.ok{background:#1e7e34}
+#lg{max-width:340px;margin:18vh auto;padding:0 20px;text-align:center}#lg input{margin:14px 0}
+nav{position:sticky;top:0;z-index:5;background:#000;display:flex;overflow-x:auto;border-bottom:1px solid var(--bd)}
+nav button{background:0;border:0;color:var(--mu);padding:14px 16px;white-space:nowrap;border-bottom:3px solid transparent}nav button.on{color:var(--ac);border-color:var(--ac)}
+main{max-width:1100px;margin:0 auto;padding:16px}h2{margin:4px 0 14px}h3{margin:18px 0 8px;color:var(--ac)}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.k{background:var(--pn);border:1px solid var(--bd);border-radius:8px;padding:14px}.k b{display:block;font-size:1.5rem}.k small{color:var(--mu)}
+.c{background:var(--pn);border:1px solid var(--bd);border-radius:8px;padding:14px;margin-bottom:10px}
+.c .t{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.act{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.mu{color:var(--mu)}
+.s{padding:2px 9px;border-radius:12px;font-size:.78rem;font-weight:700;color:#fff;background:#555}
+.s.Pendiente{background:var(--ac);color:#000}.s.EnPreparación{background:#117a8b}.s.EnCamino{background:#0069d9}.s.Entregado{background:#1e7e34}.s.Rechazado{background:#b02a37}.s.bajo{background:#b02a37}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{padding:9px;border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap}th{color:var(--ac);font-size:.85rem}
+.bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}.bar>*{width:auto}
+dialog{background:var(--pn);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:20px;width:min(92vw,420px)}dialog::backdrop{background:#000c}
+dialog label{display:block;margin-top:10px;font-size:.85rem;color:var(--mu)}dialog div{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:#000;border:1px solid var(--ac);padding:10px 16px;border-radius:8px;z-index:20}
+</style></head><body>
+<div id="lg"><h2>Administración</h2><p class="mu">El Barril del Profe</p>
+ <input id="pw" type="password" placeholder="Clave de acceso" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()">
+ <button class="b" style="width:100%" onclick="login()">Ingresar</button></div>
+<div id="app" hidden>
+ <nav id="nav"></nav><main id="v"></main></div>
+<div id="toast" hidden></div>
+<script>
+const API="https://script.google.com/macros/s/AKfycbyUaX1iTktQgPBcBsERhZR-zWEsVYjqYB1-O1LVmvrLgmvt14EnuTUbsmp-r8nP7LPV/exec";
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),m=n=>'$'+Number(n||0).toFixed(2);
+const hoy=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const AP=['En Preparación','En Camino','Entregado'],TABS=[['panel','Resumen'],['pedidos','Pedidos'],['inv','Inventario'],['compras','Compras'],['gastos','Gastos'],['clientes','Clientes'],['prods','Productos']];
+let T=sessionStorage.getItem('t'),D={},V='panel',F='Pendiente';
+async function api(a,p={}){const r=await(await fetch(API,{method:'POST',body:JSON.stringify({action:a,token:T,...p})})).json();
+ if(!r.ok){if(/Sesión/.test(r.error))out();throw r.error}return r.data}
+function toast(t){const e=$('#toast');e.textContent=t;e.hidden=false;clearTimeout(toast.h);toast.h=setTimeout(()=>e.hidden=true,3500)}
+const run=async f=>{try{await f()}catch(e){toast(e.message||e)}};
+const load=async()=>{D=await api('all');draw()};
+const login=()=>run(async()=>{const r=await api('login',{pass:$('#pw').value});T=r.token;sessionStorage.setItem('t',T);start()});
+function out(){sessionStorage.removeItem('t');T=null;$('#app').hidden=true;$('#lg').hidden=false}
+function start(){$('#lg').hidden=true;$('#app').hidden=false;run(load)}
+if(T)start();
+function go(v){V=v;draw()}
+function draw(){$('#nav').innerHTML=TABS.map(t=>`<button class="${V===t[0]?'on':''}" onclick="go('${t[0]}')">${t[1]}${t[0]==='pedidos'&&pend().length?' ('+pend().length+')':''}${t[0]==='inv'&&bajos().length?' ⚠':''}</button>`).join('')+'<button onclick="out()" style="margin-left:auto">Salir</button>';
+ $('#v').innerHTML=({panel:vPanel,pedidos:vPed,inv:vInv,compras:vCom,gastos:vGas,clientes:vCli,prods:vPro})[V]()}
+const pend=()=>D.pedidos.filter(o=>o.estado==='Pendiente'),bajos=()=>D.inventario.filter(i=>+i.stock<=+i.minimo),mes=()=>hoy().slice(0,7);
+const its=o=>{try{return JSON.parse(o.items)}catch(e){return[]}};
+const tel=t=>{t=String(t).replace(/\D/g,'');return t.startsWith('0')?'593'+t.slice(1):t};
+
+function vPanel(){const ms=mes(),ven=D.pedidos.filter(o=>AP.includes(o.estado)&&String(o.fechaReserva).startsWith(ms)).reduce((s,o)=>s+Number(o.total),0),
+ gas=D.gastos.filter(x=>String(x.fecha).startsWith(ms)).reduce((s,x)=>s+Number(x.monto),0),com=D.compras.filter(x=>String(x.fecha).startsWith(ms)).reduce((s,x)=>s+Number(x.total),0),b=bajos();
+ return `<h2>Resumen del mes</h2><div class="kp"><div class="k"><small>Ventas aprobadas</small><b>${m(ven)}</b></div><div class="k"><small>Gastos</small><b>${m(gas)}</b></div><div class="k"><small>Compras</small><b>${m(com)}</b></div><div class="k"><small>Utilidad estimada</small><b style="color:${ven-gas-com<0?'#ff8a94':'var(--ok)'}">${m(ven-gas-com)}</b></div></div>
+ <h3>Pedidos por aprobar (${pend().length})</h3>${pend().length?`<button class="b" onclick="go('pedidos')">Revisar pedidos</button>`:'<p class="mu">No hay pedidos pendientes.</p>'}
+ <h3>Alertas de inventario</h3>${b.length?b.map(i=>`<div class="c t"><span><b>${esc(i.insumo)}</b>: quedan ${i.stock} ${esc(i.unidad)} (mínimo ${i.minimo})</span><button class="b" onclick="compra('${i.id}')">Registrar compra</button></div>`).join(''):'<p class="mu">Todo el inventario está sobre el mínimo.</p>'}`}
+
+function vPed(){const L=D.pedidos.filter(o=>F==='Todos'||o.estado===F);
+ return `<h2>Pedidos</h2><div class="bar"><select onchange="F=this.value;draw()" aria-label="Filtrar">${['Pendiente','En Preparación','En Camino','Entregado','Rechazado','Todos'].map(e=>`<option ${e===F?'selected':''}>${e}</option>`).join('')}</select><button class="b g" onclick="run(load)">Actualizar</button></div>`+
+ (L.length?L.map(o=>`<div class="c"><div class="t"><b>${esc(o.id)} · ${esc(o.cliente)}</b><span class="s ${o.estado.replace(/\s/g,'')}">${esc(o.estado)}</span></div>
+ <p>${esc(o.fechaReserva)} ${esc(o.hora)} · ${esc(o.modalidad)} · ${esc(o.pago)} · <b>${m(o.total)}</b></p>
+ <p>${its(o).map(i=>`${i.qty}× ${esc(i.nombre)}${i.opt?' ('+esc(i.opt)+')':''}`).join(', ')}</p>
+ ${o.direccion?`<p class="mu">${esc(o.direccion)} ${esc(o.referencia)} <a style="color:var(--ac)" target="_blank" rel="noopener" href="https://maps.google.com/?q=${o.lat},${o.lng}">Ver mapa</a></p>`:''}${o.notas?`<p class="mu">Notas: ${esc(o.notas)}</p>`:''}
+ <div class="act">${o.estado==='Pendiente'?`<button class="b ok" onclick="est('${o.id}','En Preparación')">Aprobar</button>`:''}
+ ${o.estado==='En Preparación'?`<button class="b" onclick="est('${o.id}','En Camino')">${o.modalidad==='A domicilio'?'Salió a entregar':'Listo'}</button>`:''}
+ ${o.estado==='En Camino'?`<button class="b ok" onclick="est('${o.id}','Entregado')">Entregado</button>`:''}
+ ${['Pendiente','En Preparación'].includes(o.estado)?`<button class="b g" onclick="est('${o.id}','Rechazado')">Rechazar</button>`:''}
+ <button class="b g" onclick="ws('${o.id}')">WhatsApp</button></div></div>`).join(''):'<p class="mu">No hay pedidos en este estado.</p>')}
+function est(id,e){if(e==='Rechazado'&&!confirm('¿Rechazar este pedido? Si ya descontó inventario, se devolverá.'))return;
+ run(async()=>{const r=await api('estado',{id,estado:e});await load();toast(r.msg+(r.bajos.length?'. Stock bajo: '+r.bajos.join(', '):''))})}
+function ws(id){const o=D.pedidos.find(x=>x.id===id),n=o.cliente,t={'En Preparación':`Hola ${n}, tu reserva ${id} en EL BARRIL DEL PROFE fue aceptada y ya está en preparación.`,
+ 'En Camino':o.modalidad==='A domicilio'?`Hola ${n}, tu pedido ${id} va en camino.`:`Hola ${n}, tu pedido ${id} está listo.`,'Entregado':`Hola ${n}, gracias por preferir EL BARRIL DEL PROFE.`,
+ 'Rechazado':`Hola ${n}, lamentablemente no podemos atender tu reserva ${id}. Escríbenos para coordinar otra opción.`}[o.estado]||`Hola ${n}, te escribimos de EL BARRIL DEL PROFE por tu reserva ${id}.`;
+ window.open(`https://wa.me/${tel(o.telefono)}?text=${encodeURIComponent(t)}`,'_blank')}
+
+function vInv(){return `<h2>Inventario</h2><div class="bar"><button class="b" onclick="insumo()">Nuevo insumo</button></div><div class="tw"><table><tr><th>Código</th><th>Insumo</th><th>Stock</th><th>Mínimo</th><th>Costo</th><th></th></tr>`+
+ D.inventario.map(i=>`<tr><td>${esc(i.id)}</td><td>${esc(i.insumo)}</td><td>${i.stock} ${esc(i.unidad)} ${+i.stock<=+i.minimo?'<span class="s bajo">Bajo</span>':''}</td><td>${i.minimo}</td><td>${m(i.costo)}</td>
+ <td><button class="b g" onclick="ajuste('${i.id}')">Contar</button> <button class="b g" onclick="insumo('${i.id}')">Editar</button> <button class="b" onclick="compra('${i.id}')">Comprar</button></td></tr>`).join('')+`</table></div>
+ <p class="mu" style="margin-top:10px">El stock baja solo al aprobar un pedido, según la receta de cada producto.</p>`}
+function insumo(id){const i=D.inventario.find(x=>x.id===id),n=!i;
+ form(n?'Nuevo insumo':'Editar insumo',[{k:'insumo',l:'Nombre',v:i?.insumo},{k:'unidad',l:'Unidad',o:['kg','u','l','lb'].map(x=>[x,x]),v:i?.unidad},...(n?[{k:'stock',l:'Stock inicial',t:'number',v:0}]:[]),{k:'minimo',l:'Stock mínimo (alerta)',t:'number',v:i?.minimo},{k:'costo',l:'Costo por unidad',t:'number',v:i?.costo||0}],
+ async o=>{await api('upsert',{sheet:'Inventario',obj:{...(i||{id:'INS-'+Date.now().toString(36).toUpperCase()}),...o}});await load()})}
+function ajuste(id){const i=D.inventario.find(x=>x.id===id);form('Contar '+i.insumo,[{k:'stock',l:'Cantidad real en bodega ('+i.unidad+')',t:'number',v:i.stock},{k:'motivo',l:'Motivo',v:'Conteo físico'}],async o=>{await api('ajuste',{insumoId:id,...o});await load()})}
+
+const sel=()=>D.inventario.map(i=>[i.id,i.insumo+' ('+i.unidad+')']);
+function compra(id){form('Registrar compra',[{k:'fecha',l:'Fecha',t:'date',v:hoy()},{k:'proveedor',l:'Proveedor',v:''},{k:'insumoId',l:'Insumo',o:sel(),v:id},{k:'cantidad',l:'Cantidad comprada',t:'number'},{k:'total',l:'Total pagado',t:'number'}],
+ async o=>{await api('compra',o);V='compras';await load();toast('Compra registrada y stock actualizado')})}
+function vCom(){return `<h2>Compras</h2><div class="bar"><button class="b" onclick="compra()">Nueva compra</button></div><div class="tw"><table><tr><th>Fecha</th><th>Proveedor</th><th>Insumo</th><th>Cantidad</th><th>Total</th></tr>`+
+ D.compras.map(c=>`<tr><td>${esc(c.fecha)}</td><td>${esc(c.proveedor)}</td><td>${esc((D.inventario.find(i=>i.id===c.insumoId)||{}).insumo||c.insumoId)}</td><td>${c.cantidad}</td><td>${m(c.total)}</td></tr>`).join('')+'</table></div>'}
+function gasto(){form('Registrar gasto',[{k:'fecha',l:'Fecha',t:'date',v:hoy()},{k:'categoria',l:'Categoría',o:['Arriendo','Servicios','Sueldos','Gas y carbón','Transporte','Publicidad','Otros'].map(x=>[x,x])},{k:'descripcion',l:'Descripción'},{k:'monto',l:'Monto',t:'number'}],
+ async o=>{await api('gasto',o);await load()})}
+function vGas(){return `<h2>Gastos</h2><div class="bar"><button class="b" onclick="gasto()">Nuevo gasto</button></div><div class="tw"><table><tr><th>Fecha</th><th>Categoría</th><th>Descripción</th><th>Monto</th></tr>`+
+ D.gastos.map(g=>`<tr><td>${esc(g.fecha)}</td><td>${esc(g.categoria)}</td><td>${esc(g.descripcion)}</td><td>${m(g.monto)}</td></tr>`).join('')+'</table></div>'}
+function vCli(){const c={};D.pedidos.filter(o=>o.estado!=='Rechazado').forEach(o=>{const k=String(o.telefono),x=c[k]=c[k]||{n:o.cliente,t:k,p:0,s:0,u:o.fechaReserva,mk:0};x.p++;x.s+=Number(o.total);if(o.fechaReserva>x.u)x.u=o.fechaReserva;if(o.marketing==='SI')x.mk=1});
+ const L=Object.values(c).sort((a,b)=>b.s-a.s);return `<h2>Clientes</h2><div class="tw"><table><tr><th>Cliente</th><th>Celular</th><th>Pedidos</th><th>Total comprado</th><th>Último</th><th>Promos</th></tr>`+
+ L.map(x=>`<tr><td>${esc(x.n)}</td><td><a style="color:var(--ac)" target="_blank" rel="noopener" href="https://wa.me/${tel(x.t)}">${esc(x.t)}</a></td><td>${x.p}</td><td>${m(x.s)}</td><td>${esc(x.u)}</td><td>${x.mk?'Acepta':'No'}</td></tr>`).join('')+'</table></div><p class="mu" style="margin-top:10px">Solo escribe promociones a quienes aceptaron recibirlas.</p>'}
+function prod(id){const p=D.productos.find(x=>x.id===id),n=!p;
+ form(n?'Nuevo producto':'Editar producto',[{k:'nombre',l:'Nombre',v:p?.nombre},{k:'precio',l:'Precio',t:'number',v:p?.precio},{k:'categoria',l:'Categoría',o:['Carnes','Acompañantes','Bebidas','Postres'].map(x=>[x,x]),v:p?.categoria},
+ {k:'descripcion',l:'Descripción',v:p?.descripcion,n:1},{k:'opciones',l:'Opciones separadas por | (ej. Plátano|Papas)',v:p?.opciones,n:1},{k:'activo',l:'Visible en el menú',o:[['SI','Sí'],['NO','No']],v:p?.activo||'SI'},
+ {k:'receta',l:'Receta JSON: insumo y cantidad por unidad vendida',v:p?.receta||'{"base":{"INS-01":0.2}}'}],
+ async o=>{await api('upsert',{sheet:'Productos',obj:{...(p||{id:'PROD-'+Date.now().toString(36).toUpperCase()}),...o}});await load()})}
+function vPro(){return `<h2>Productos y recetas</h2><div class="bar"><button class="b" onclick="prod()">Nuevo producto</button></div><div class="tw"><table><tr><th>Producto</th><th>Precio</th><th>Categoría</th><th>Visible</th><th></th></tr>`+
+ D.productos.map(p=>`<tr><td>${esc(p.nombre)}</td><td>${m(p.precio)}</td><td>${esc(p.categoria)}</td><td>${p.activo==='SI'?'Sí':'No'}</td><td><button class="b g" onclick="prod('${p.id}')">Editar</button></td></tr>`).join('')+
+ `</table></div><p class="mu" style="margin-top:10px">Códigos de insumo: ${D.inventario.map(i=>esc(i.id)+' = '+esc(i.insumo)).join(' · ')}</p>`}
+
+function form(t,fs,save){const d=document.createElement('dialog');
+ d.innerHTML=`<form method="dialog"><h3>${esc(t)}</h3>${fs.map(f=>`<label>${esc(f.l)}${f.o?`<select name="${f.k}">${f.o.map(o=>`<option value="${esc(o[0])}" ${o[0]==f.v?'selected':''}>${esc(o[1])}</option>`).join('')}</select>`:`<input name="${f.k}" type="${f.t||'text'}" step="any" value="${esc(f.v)}" ${f.n?'':'required'}>`}</label>`).join('')}<div><button class="b g" value="x" formnovalidate>Cancelar</button><button class="b" value="ok">Guardar</button></div></form>`;
+ document.body.append(d);d.showModal();
+ d.onclose=()=>{if(d.returnValue==='ok'){const o={};new FormData(d.querySelector('form')).forEach((v,k)=>o[k]=v);run(()=>save(o))}d.remove()}}
+</script></body></html>
