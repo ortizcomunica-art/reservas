@@ -1,68 +1,79 @@
 <!DOCTYPE html>
 <html lang="es"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="El Barril del Profe: carnes al barril en Quito. Reserva tu pedido en línea.">
-<meta name="theme-color" content="#121212">
-<title>El Barril del Profe - Pedidos y Reservas</title>
+<meta name="description" content="El Barril del Profe: carnes al barril en La Rumiñahui, Quito. Pide antes y retira sin esperar.">
+<meta name="theme-color" content="#0c0a08">
+<title>El Barril del Profe - Carnes al barril</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,600;0,800;1,400&display=swap">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
 @font-face{font-family:Bronco;src:url('https://raw.githubusercontent.com/ortizcomunica-art/reservas/d5152a9f6ad1cc4b5d2bcc999870b5715b375cb4/BroncoPersonalUse.ttf');font-display:swap}
-:root{--p:#c82333;--pd:#a71d2a;--bg:#121212;--pn:#1e1e1e;--cd:#2a2a2a;--tx:#f8f9fa;--mu:#b5b5b5;--bd:#333;--ac:#ffc107}
+:root{--bg:#0c0a08;--pn:#17130f;--cd:#211b15;--tx:#f6efe4;--mu:#b8ab9a;--bd:#3a3026;--g1:#ffd23f;--g2:#f08a24;--bl:#1f5a7a;--gold:linear-gradient(180deg,var(--g1),var(--g2))}
 *{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--tx);font:16px/1.6 'Segoe UI',system-ui,sans-serif;padding-bottom:72px}
-h1,h2,h3{font-family:Bronco,'Segoe UI',sans-serif;letter-spacing:1px;font-weight:400}
-header{position:sticky;top:0;z-index:9;background:rgba(0,0,0,.92);border-bottom:1px solid var(--bd);padding:8px 5%;display:flex;justify-content:space-between;align-items:center}
-header img{height:46px}header a{color:var(--tx);text-decoration:none;font-weight:600}
-.hero{text-align:center;padding:56px 20px;background:linear-gradient(rgba(0,0,0,.7),rgba(0,0,0,.9)),url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=1200&q=70') center/cover}
-.hero h1{font-size:clamp(2.2rem,8vw,3.4rem);line-height:1.1;margin:10px 0}.hero p{color:var(--mu);max-width:560px;margin:0 auto 20px}
-.btn{display:inline-block;background:var(--p);color:#fff;border:0;border-radius:6px;padding:12px 26px;font:700 1rem inherit;text-decoration:none;cursor:pointer}.btn:hover{background:var(--pd)}
-h2{text-align:center;font-size:2.1rem;margin:40px 0 18px;scroll-margin-top:70px}
+body{background:var(--bg);color:var(--tx);font:16px/1.6 Montserrat,'Segoe UI',system-ui,sans-serif;padding-bottom:76px}
+h1,h2,h3{font-family:Bronco,Impact,'Arial Black',sans-serif;font-weight:400;letter-spacing:1px}
+.gold{background:var(--gold);-webkit-background-clip:text;background-clip:text;color:transparent}
+.btn{display:inline-block;background:var(--gold);color:#1a1007;border:0;border-radius:6px;padding:13px 28px;font:800 1rem Montserrat,sans-serif;text-decoration:none;cursor:pointer}
+.btn:disabled{opacity:.6}
+header{position:sticky;top:0;z-index:9;display:flex;justify-content:space-between;align-items:center;padding:8px 5%;background:rgba(12,10,8,.94);border-bottom:1px solid var(--bd)}
+header img{height:44px}header .btn{padding:9px 18px}
+.hero{text-align:center;padding:48px 20px 56px;background:radial-gradient(circle at 88% 0,rgba(240,138,36,.38),transparent 42%),var(--bg)}
+.hero img{width:min(300px,70vw)}.hero h1{font-size:clamp(2rem,7vw,3.2rem);line-height:1.1;margin:18px 0 8px}
+.hero p{color:var(--mu);max-width:520px;margin:0 auto 22px}
+#abre{display:inline-block;margin-bottom:18px;padding:5px 14px;border:1px solid var(--bd);border-radius:20px;font-size:.85rem;color:var(--mu)}#abre.on{color:#7be08f;border-color:#2c6b3a}
+h2{text-align:center;font-size:2.4rem;margin:44px 0 18px;scroll-margin-top:64px}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px;max-width:1150px;margin:0 auto;padding:0 16px}
 .panel{background:var(--pn);border:1px solid var(--bd);border-radius:10px;padding:22px}
-.panel h3{color:var(--ac);font-size:1.5rem;margin-bottom:12px}
-.cat{color:var(--ac);margin:18px 0 8px;font-size:1rem}
-.pr{background:var(--cd);border:1px solid var(--bd);border-radius:8px;padding:14px;margin-bottom:12px}
-.pr{display:grid;grid-template-columns:1fr auto;gap:2px 10px}.pr p{grid-column:1/3;color:var(--mu);font-size:.88rem}.pc{color:var(--ac);font-weight:700}
-.pr .row{grid-column:1/3;display:flex;justify-content:space-between;align-items:center;margin-top:8px}.pr em{grid-column:1/3;color:var(--p)}
-.q{display:flex;align-items:center;background:#111;border-radius:6px}.q button{width:44px;height:44px;background:0;border:0;color:#fff;font-size:1.3rem;cursor:pointer}.q span{min-width:28px;text-align:center;font-weight:700}
-label{display:block;font-size:.9rem;color:var(--mu);margin:12px 0 4px}
-input,select,textarea{width:100%;padding:11px;background:#111;border:1px solid var(--bd);border-radius:6px;color:#fff;font:inherit}
-input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
-.opts{display:flex;gap:8px;flex-wrap:wrap}.opts label{flex:1;margin:0;color:var(--tx)}
-.opts input{position:absolute;opacity:0;width:1px;height:1px}
-.opts span{display:block;text-align:center;padding:11px 6px;background:var(--cd);border:1px solid var(--bd);border-radius:6px;cursor:pointer;font-size:.9rem}
-.opts input:checked+span{background:var(--p);border-color:var(--p);font-weight:700}.opts input:focus-visible+span{outline:2px solid var(--ac)}
-#dbox{margin-top:10px}#map{height:230px;border-radius:6px;margin:8px 0}#dinfo{color:var(--ac);font-size:.9rem}
-.ci{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd)}.x{background:0;border:0;color:var(--mu);cursor:pointer;min-width:32px;min-height:32px}.mu{color:var(--mu)}
-#tot{margin-top:12px;font-size:1.05rem}#err{color:#ff8a94;min-height:1.4em;margin-top:10px}
-.go{width:100%;margin-top:6px;background:#1e7e34;padding:15px}.go:hover{background:#196a2c}.go:disabled{opacity:.6}
+.cat{font-size:1.7rem;margin:22px 0 6px}.cat:first-child{margin-top:0}
+.pr{padding:10px 0 14px}.it{display:flex;align-items:baseline;font-weight:600;font-size:1.1rem}
+.it i{flex:1;border-bottom:3px dotted var(--g1);margin:0 8px;transform:translateY(-4px)}.it b{font-weight:800}
+.pr p{font-style:italic;color:var(--mu);font-size:.9rem}.pr em{color:var(--g2);font-size:.85rem}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px}
+.q{display:flex;align-items:center;background:var(--cd);border-radius:6px;margin-left:auto}.q button{width:44px;height:44px;background:0;border:0;color:var(--g1);font-size:1.4rem;cursor:pointer}.q span{min-width:28px;text-align:center;font-weight:800}
+label{display:block;font-size:.85rem;color:var(--mu);margin:12px 0 4px}
+input,select,textarea{width:100%;padding:11px;background:var(--cd);border:1px solid var(--bd);border-radius:6px;color:var(--tx);font:inherit}
+.row select{width:auto;padding:8px}
+:focus-visible{outline:2px solid var(--g1);outline-offset:2px}
+.opts{display:flex;gap:8px}.opts label{flex:1;margin:0;color:var(--tx)}.opts input{position:absolute;opacity:0;width:1px}
+.opts span{display:block;text-align:center;padding:11px 4px;background:var(--cd);border:1px solid var(--bd);border-radius:6px;cursor:pointer;font-size:.88rem}
+.opts input:checked+span{background:var(--bl);border-color:#2f86b3;font-weight:800}.opts input:focus-visible+span{outline:2px solid var(--g1)}
+#map{height:230px;border-radius:6px;margin:8px 0}#dinfo{color:var(--g1);font-size:.9rem}
+.ci{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd)}.x{background:0;border:0;color:var(--mu);min-width:32px;min-height:32px;cursor:pointer}.mu{color:var(--mu)}
+#tot{margin-top:12px}#err{color:#ff8a94;min-height:1.4em;margin-top:10px}.go{width:100%;margin-top:6px}
 .chk{display:flex;gap:10px;align-items:flex-start;font-size:.82rem;color:var(--mu)}.chk input{width:20px;margin-top:3px}
 #bar{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:8;text-align:center;box-shadow:0 4px 18px #000}
 #ok{text-align:center}#ok p{margin:10px 0}
-footer{margin-top:50px;border-top:1px solid var(--bd);padding:30px 20px;text-align:center;color:var(--mu);font-size:.9rem}footer a{color:var(--ac)}
+.loc{max-width:1150px;margin:50px auto 0;padding:30px 20px;border-top:1px solid var(--bd);display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:24px;color:var(--mu)}
+.loc h3{font-size:1.5rem;margin-bottom:6px}.loc a{color:var(--g1)}.loc td{padding:2px 14px 2px 0}
+footer{text-align:center;color:var(--mu);font-size:.82rem;padding:0 20px 20px}
 </style></head><body>
-<header><a href="#inicio"><img src="https://raw.githubusercontent.com/ortizcomunica-art/reservas/d5152a9f6ad1cc4b5d2bcc999870b5715b375cb4/LOGO.png" alt="El Barril del Profe"></a><a href="#pedido">Hacer pedido</a></header>
-<section id="inicio" class="hero"><h1>Sabor hecho a fuego</h1><p>Carnes preparadas al barril, acompañantes y bebidas para disfrutar en casa o con los amigos.</p><a class="btn" href="#pedido">Hacer pedido</a></section>
-<h2 id="pedido">Haz tu pedido</h2>
+<header><a href="#inicio" aria-label="Inicio"><img src="https://raw.githubusercontent.com/ortizcomunica-art/reservas/d5152a9f6ad1cc4b5d2bcc999870b5715b375cb4/LOGO.png" alt="El Barril del Profe"></a><a class="btn" href="#pedido">Hacer pedido</a></header>
+<section id="inicio" class="hero">
+ <img src="https://raw.githubusercontent.com/ortizcomunica-art/reservas/d5152a9f6ad1cc4b5d2bcc999870b5715b375cb4/LOGO.png" alt="El Barril del Profe - Carnes al barril">
+ <h1 class="gold">Sabor hecho a fuego</h1>
+ <p>Preparamos cada plato según lo que pides. Reserva tu pedido, elige la hora y retíralo sin esperar.</p>
+ <div id="abre"></div><br><a class="btn" href="#pedido">Ver el menú y pedir</a>
+</section>
+<h2 id="pedido" class="gold">Menú</h2>
 <div class="grid">
- <div class="panel"><h3>Menú</h3><div id="menu" class="mu">Cargando menú…</div></div>
+ <div class="panel"><div id="menu" class="mu">Cargando menú…</div></div>
  <div class="panel" id="tu"><div id="ok" hidden></div>
-  <div id="form"><h3>Tu pedido</h3>
+  <div id="form"><h3 class="gold" style="font-size:1.8rem">Tu pedido</h3>
    <label for="nom">Nombre</label><input id="nom" autocomplete="name" placeholder="Ej. Juan Pérez">
    <label for="tel">Celular</label><input id="tel" type="tel" inputmode="numeric" autocomplete="tel" placeholder="0991234567">
-   <label for="fec">Fecha del pedido</label><input id="fec" type="date">
-   <label for="hor">Hora de entrega o retiro</label><input id="hor" type="time">
+   <label for="fec">Día (atendemos viernes, sábado y domingo)</label><input id="fec" type="date" onchange="slots()">
+   <label for="hor">Hora de entrega o retiro</label><select id="hor"></select>
    <label>Modalidad</label>
-   <div class="opts"><label><input type="radio" name="mod" value="Para llevar" onchange="tg()"><span>Para llevar</span></label>
-    <label><input type="radio" name="mod" value="En el local" checked onchange="tg()"><span>En el local</span></label>
+   <div class="opts"><label><input type="radio" name="mod" value="Para llevar" checked onchange="tg()"><span>Para llevar</span></label>
+    <label><input type="radio" name="mod" value="En el local" onchange="tg()"><span>En el local</span></label>
     <label><input type="radio" name="mod" value="A domicilio" id="delivery" onchange="tg()"><span>A domicilio</span></label></div>
    <div id="dbox" hidden>
-    <button type="button" class="btn" style="padding:8px 14px;font-size:.85rem" onclick="geo()">Usar mi ubicación</button>
-    <div id="map"></div><p id="dinfo">Arrastra el pin hasta tu dirección para calcular el envío.</p>
+    <button type="button" class="btn" style="padding:8px 14px;font-size:.85rem;margin-top:10px" onclick="geo()">Usar mi ubicación</button>
+    <div id="map"></div><p id="dinfo">Entregamos hasta 5 km del local. Arrastra el pin a tu dirección.</p>
     <label for="sec">Sector</label><input id="sec" placeholder="Ej. Carcelén">
     <label for="dir">Dirección</label><input id="dir" placeholder="Calle principal y secundaria">
     <label for="ref">Referencia</label><textarea id="ref" rows="2" placeholder="Ej. Casa blanca junto al parque"></textarea></div>
-   <h3 style="margin-top:22px">Productos</h3><div id="cart"></div><div id="tot"></div>
+   <h3 class="gold" style="margin-top:22px;font-size:1.4rem">Productos</h3><div id="cart"></div><div id="tot"></div>
    <label>Forma de pago</label>
    <div class="opts"><label><input type="radio" name="pago" value="Efectivo" checked><span>Efectivo</span></label><label><input type="radio" name="pago" value="Transferencia"><span>Transferencia</span></label></div>
    <label for="nota">Observaciones</label><textarea id="nota" rows="2" placeholder="Cubiertos, salsas, sin ají…"></textarea>
@@ -70,54 +81,79 @@ footer{margin-top:50px;border-top:1px solid var(--bd);padding:30px 20px;text-ali
    <p id="err" role="alert"></p><button class="btn go" id="go" onclick="send()">Reservar pedido</button></div></div>
 </div>
 <a href="#tu" class="btn" id="bar" hidden></a>
-<footer><p>Quito, Ecuador · +593 99 250 6756</p><p><a href="https://goo.gl/maps/X1CpR3tm2MZANC4r8" target="_blank" rel="noopener">Ver ubicación en Google Maps</a></p><p style="margin-top:12px">© 2026 El Barril del Profe. Sitio desarrollado por Ortíz Comunicaciones.</p></footer>
+<section class="loc">
+ <div><h3 class="gold">Dónde estamos</h3><p>Av. Francisca Sinasigchi N60-195 y Av. del Maestro, sector La Rumiñahui, Quito.</p><p><a href="https://goo.gl/maps/X1CpR3tm2MZANC4r8" target="_blank" rel="noopener">Ver en Google Maps</a></p></div>
+ <div><h3 class="gold">Horario</h3><table><tr><td>Viernes</td><td>18:00 a 20:00</td></tr><tr><td>Sábado</td><td>10:00 a 20:00</td></tr><tr><td>Domingo</td><td>10:00 a 20:00</td></tr></table></div>
+ <div><h3 class="gold">Contacto</h3><p><a href="https://wa.me/593992506756" target="_blank" rel="noopener">WhatsApp +593 99 250 6756</a></p></div>
+</section>
+<footer>© 2026 El Barril del Profe · Sitio desarrollado por Ortíz Comunicaciones</footer>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-const API="https://script.google.com/macros/s/AKfycbyUaX1iTktQgPBcBsERhZR-zWEsVYjqYB1-O1LVmvrLgmvt14EnuTUbsmp-r8nP7LPV/exec",WA="593992506756",ST={lat:-0.12422216520351366,lng:-78.48703013498067},MAXKM=12;
+const API="https://script.google.com/macros/s/AKfycbyUaX1iTktQgPBcBsERhZR-zWEsVYjqYB1-O1LVmvrLgmvt14EnuTUbsmp-r8nP7LPV/exec",WA="593992506756",ST={lat:-0.12422216520351366,lng:-78.48703013498067},MAXKM=5;
+const PL=['Plátano','Papas'],G=['Queso','Sal prieta','Mayonesa de la casa'];
+let M=[ // menú de respaldo: se reemplaza por el de la hoja cuando el script responde
+ {id:'PROD-001',nombre:'Chicharrón',precio:5.5,categoria:'Carnes',descripcion:'200 g + guarnición + ensalada',opciones:PL},
+ {id:'PROD-002',nombre:'Costillar BBQ',precio:6.5,categoria:'Carnes',descripcion:'350 g + guarnición + ensalada',opciones:PL},
+ {id:'PROD-003',nombre:'Choclo',precio:1.5,categoria:'Acompañantes',descripcion:'Queso + mayonesa',opciones:[]},
+ {id:'PROD-004',nombre:'Plátanos asados',precio:2,categoria:'Acompañantes',descripcion:'Con queso, sal prieta o mayonesa de la casa',opciones:G},
+ {id:'PROD-005',nombre:'Jarra de limonada',precio:3,categoria:'Bebidas',descripcion:'Limonada natural',opciones:[]},
+ {id:'PROD-006',nombre:'Gaseosa personal',precio:1,categoria:'Bebidas',descripcion:'Botella personal',opciones:[]},
+ {id:'PROD-007',nombre:'Cerveza',precio:1.3,categoria:'Bebidas',descripcion:'Solo mayores de 18 años',opciones:[]},
+ {id:'PROD-008',nombre:'Café lojano',precio:1,categoria:'Bebidas',descripcion:'Taza de café de Loja',opciones:[]}];
 const $=i=>document.getElementById(i),m=n=>'$'+Number(n).toFixed(2);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const hoy=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
-let M=[],C={},map,pin,pos=ST,moved=0,km=0,fee=0;
-$('fec').min=$('fec').value=hoy();
-fetch(API).then(r=>r.json()).then(r=>{M=r.data.productos;menu()}).catch(()=>$('menu').textContent='No pudimos cargar el menú. Recarga la página o escríbenos por WhatsApp.');
+const pad=n=>String(n).padStart(2,'0'),ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+let C={},map,pin,pos=ST,moved=0,km=0,fee=0;
+// Horario: día (0=dom ... 6=sáb) -> [abre, cierra]
+const HR={5:[18,20],6:[10,20],0:[10,20]},DN=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+function abre(){const n=new Date(),h=HR[n.getDay()],t=n.getHours()+n.getMinutes()/60,e=$('abre');
+ if(h&&t>=h[0]&&t<h[1]){e.textContent='Abierto ahora · cierra a las 20:00';e.className='on';return}
+ for(let i=0;i<8;i++){const d=new Date(n.getTime()+i*864e5),x=HR[d.getDay()];if(x&&(i>0||t<x[0])){e.textContent='Cerrado · abrimos '+(i?DN[d.getDay()]:'hoy')+' a las '+x[0]+':00';return}}}
+function nextOpen(){const n=new Date();for(let i=0;i<8;i++){const d=new Date(n.getTime()+i*864e5),x=HR[d.getDay()];if(x&&(i>0||n.getHours()+n.getMinutes()/60<x[1]-.5))return d}return n}
+function slots(){const d=new Date($('fec').value+'T12:00'),x=HR[d.getDay()],s=$('hor');
+ if(!x){s.innerHTML='<option value="">Sin atención ese día</option>';return}
+ let o='',t=x[0];if(ymd(d)===ymd(new Date())){const n=new Date();t=Math.max(t,Math.ceil((n.getHours()+n.getMinutes()/60+.5)*2)/2)}
+ for(;t<x[1];t+=.5)o+=`<option>${pad(Math.floor(t))}:${t%1?'30':'00'}</option>`;s.innerHTML=o||'<option value="">Ya no hay horarios hoy</option>'}
+$('fec').min=ymd(new Date());$('fec').value=ymd(nextOpen());slots();abre();
+fetch(API).then(r=>r.json()).then(r=>{if(r.ok&&r.data.productos.length)M=r.data.productos}).catch(()=>{}).finally(menu);
 const key=id=>id+'|'+($('o-'+id)?$('o-'+id).value:'');
 function menu(){const g={};M.forEach(p=>(g[p.categoria]=g[p.categoria]||[]).push(p));
- $('menu').innerHTML=Object.keys(g).map(c=>`<h4 class="cat">${esc(c)}</h4>`+g[c].map(p=>`<article class="pr"><b>${esc(p.nombre)}</b><span class="pc">${m(p.precio)}</span><p>${esc(p.descripcion)}</p>`+
- (p.agotado?'<em>Agotado por hoy</em>':`<div class="row">${p.opciones.length?`<select id="o-${p.id}" style="width:auto" onchange="draw()" aria-label="Guarnición">${p.opciones.map(o=>`<option>${esc(o)}</option>`).join('')}</select>`:'<i></i>'}<div class="q"><button aria-label="Quitar uno" onclick="chg('${p.id}',-1)">−</button><span id="q-${p.id}">0</span><button aria-label="Agregar uno" onclick="chg('${p.id}',1)">+</button></div></div>`)+'</article>').join('')).join('');draw()}
+ $('menu').innerHTML=Object.keys(g).map(c=>`<h3 class="cat gold">${esc(c)}</h3>`+g[c].map(p=>`<article class="pr"><div class="it"><span>${esc(p.nombre)}</span><i></i><b>${m(p.precio)}</b></div><p>${esc(p.descripcion)}</p>`+
+ (p.agotado?'<em>Agotado por hoy</em>':`<div class="row">${p.opciones.length?`<select id="o-${p.id}" onchange="draw()" aria-label="Opción de ${esc(p.nombre)}">${p.opciones.map(o=>`<option>${esc(o)}</option>`).join('')}</select>`:''}${p.cupo!=null&&p.cupo<=3?`<em>Quedan ${p.cupo}</em>`:''}<div class="q"><button aria-label="Quitar uno" onclick="chg('${p.id}',-1)">−</button><span id="q-${p.id}">0</span><button aria-label="Agregar uno" onclick="chg('${p.id}',1)">+</button></div></div>`)+'</article>').join('')).join('');draw()}
 function chg(id,d){const p=M.find(x=>x.id===id),k=key(id),c=C[k]||{id,nombre:p.nombre,precio:p.precio,opt:$('o-'+id)?$('o-'+id).value:'',qty:0};
  c.qty=Math.max(0,c.qty+d);c.qty?C[k]=c:delete C[k];draw()}
 function del(i){delete C[Object.keys(C)[i]];draw()}
 function draw(){M.forEach(p=>{const e=$('q-'+p.id);if(e)e.textContent=(C[key(p.id)]||{}).qty||0});
  const ks=Object.keys(C),sub=ks.reduce((s,k)=>s+C[k].precio*C[k].qty,0),env=$('delivery').checked?fee:0,n=ks.reduce((s,k)=>s+C[k].qty,0);
  $('cart').innerHTML=ks.length?ks.map((k,i)=>`<div class="ci"><span>${C[k].qty}× ${esc(C[k].nombre)}${C[k].opt?' ('+esc(C[k].opt)+')':''}</span><span>${m(C[k].precio*C[k].qty)} <button class="x" aria-label="Quitar del pedido" onclick="del(${i})">✕</button></span></div>`).join(''):'<p class="mu">Aún no agregas productos. Usa + en el menú.</p>';
- $('tot').innerHTML=`Subtotal ${m(sub)} · Envío ${m(env)}<br><b>Total ${m(sub+env)}</b>`;
+ $('tot').innerHTML=`Subtotal ${m(sub)} · Envío ${m(env)}<br><b class="gold" style="font-size:1.3rem">Total ${m(sub+env)}</b>`;
  $('bar').hidden=!n;$('bar').textContent=`Ver mi pedido (${n}) · ${m(sub+env)}`}
 function tg(){const d=$('delivery').checked;$('dbox').hidden=!d;if(d){map?setTimeout(()=>map.invalidateSize(),200):iniMap()}draw()}
-function dist(a,b,c,d){const r=x=>x*Math.PI/180,q=Math.sin(r(c-a)/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(r(d-b)/2)**2;return 6371*2*Math.atan2(Math.sqrt(q),Math.sqrt(1-q))*1.3}
+function dist(a,b,c,d){const r=x=>x*Math.PI/180,q=Math.sin(r(c-a)/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(r(d-b)/2)**2;return 6371*2*Math.atan2(Math.sqrt(q),Math.sqrt(1-q))}
 function iniMap(){map=L.map('map').setView([ST.lat,ST.lng],14);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
- L.marker([ST.lat,ST.lng]).addTo(map).bindPopup('El Barril del Profe');
+ L.marker([ST.lat,ST.lng]).addTo(map).bindPopup('El Barril del Profe');L.circle([ST.lat,ST.lng],{radius:MAXKM*1000,color:'#f08a24',fill:false,weight:1}).addTo(map);
  pin=L.marker([ST.lat+.004,ST.lng],{draggable:true}).addTo(map).bindPopup('Arrastra el pin a tu dirección').openPopup();
  pin.on('dragend',()=>{const q=pin.getLatLng();setPos(q.lat,q.lng)})}
-function setPos(a,b){pos={lat:a,lng:b};moved=1;km=dist(ST.lat,ST.lng,a,b);fee=Math.round((1.5+Math.max(0,km-2)*.5)*100)/100;
- $('dinfo').textContent=km>MAXKM?`Fuera de cobertura (máximo ${MAXKM} km).`:`${km.toFixed(1)} km · envío ${m(fee)} · aprox. ${Math.round(20+km*3)} min`;draw()}
+function setPos(a,b){pos={lat:a,lng:b};moved=1;km=dist(ST.lat,ST.lng,a,b);const road=km*1.3;fee=Math.round((1.5+Math.max(0,road-2)*.5)*100)/100;
+ $('dinfo').textContent=km>MAXKM?`Estás a ${km.toFixed(1)} km: fuera de la zona de entrega (máximo ${MAXKM} km).`:`${km.toFixed(1)} km · envío ${m(fee)} · aprox. ${Math.round(20+road*3)} min`;draw()}
 function geo(){if(!navigator.geolocation)return $('dinfo').textContent='Tu navegador no permite ubicación. Mueve el pin.';
  navigator.geolocation.getCurrentPosition(p=>{const a=p.coords.latitude,b=p.coords.longitude;map.setView([a,b],16);pin.setLatLng([a,b]);setPos(a,b)},()=>$('dinfo').textContent='No pudimos acceder a tu ubicación. Mueve el pin manualmente.')}
 async function send(){const g=i=>$(i).value.trim(),dom=$('delivery').checked,ks=Object.keys(C),bad=(i,t)=>{$('err').textContent=t;$(i).focus();return 1};
  if(!g('nom'))return bad('nom','Escribe tu nombre.');
  if(!/^09\d{8}$/.test(g('tel')))return bad('tel','Escribe tu celular de 10 dígitos, ej. 0991234567.');
- if(!g('fec')||g('fec')<hoy())return bad('fec','Elige una fecha desde hoy.');
- if(!g('hor'))return bad('hor','Indica la hora de entrega o retiro.');
+ if(!g('fec')||g('fec')<ymd(new Date()))return bad('fec','Elige una fecha desde hoy.');
+ if(!g('hor'))return bad('fec','Elige un día con atención: viernes, sábado o domingo.');
  if(!ks.length)return bad('cart','Agrega al menos un producto.');
- if(dom){if(!moved)return bad('dbox','Mueve el pin a tu dirección de entrega.');if(km>MAXKM)return bad('dbox','Tu ubicación está fuera de la zona de cobertura.');if(!g('dir'))return bad('dir','Escribe tu dirección.')}
+ if(dom){if(!moved)return bad('dbox','Mueve el pin a tu dirección de entrega.');if(km>MAXKM)return bad('dbox','Tu ubicación está fuera de la zona de entrega.');if(!g('dir'))return bad('dir','Escribe tu dirección.')}
  $('err').textContent='';const b=$('go');b.disabled=true;b.textContent='Enviando…';
  const mod=document.querySelector('[name=mod]:checked').value,pago=document.querySelector('[name=pago]:checked').value,its=ks.map(k=>C[k]);
  const p={action:'order',cliente:g('nom'),telefono:g('tel'),fechaReserva:g('fec'),hora:g('hor'),modalidad:mod,sector:g('sec'),direccion:dom?g('dir'):'',referencia:dom?g('ref'):'',
   lat:dom?pos.lat:'',lng:dom?pos.lng:'',items:its.map(i=>({id:i.id,qty:i.qty,opt:i.opt})),pago,notas:g('nota'),marketing:$('mk').checked?'SI':'NO'};
  try{const r=await(await fetch(API,{method:'POST',body:JSON.stringify(p)})).json();if(!r.ok)throw r.error;
-  let t=`Hola *EL BARRIL DEL PROFE*, acabo de reservar el pedido *${r.data.id}*.\n*Cliente:* ${p.cliente}\n*Fecha:* ${p.fechaReserva} ${p.hora}\n*Pedido:* ${its.map(i=>i.qty+'x '+i.nombre+(i.opt?' ('+i.opt+')':'')).join(', ')}\n*Modalidad:* ${mod}\n`;
+  let t=`Hola *EL BARRIL DEL PROFE*, acabo de reservar el pedido *${r.data.id}*.\n*Cliente:* ${p.cliente}\n*Día y hora:* ${p.fechaReserva} ${p.hora}\n*Pedido:* ${its.map(i=>i.qty+'x '+i.nombre+(i.opt?' ('+i.opt+')':'')).join(', ')}\n*Modalidad:* ${mod}\n`;
   if(dom)t+=`*Dirección:* ${p.direccion}\n*Ubicación:* https://maps.google.com/?q=${pos.lat},${pos.lng}\n`;
   t+=`*Pago:* ${pago}\n*Total:* ${m(r.data.total)}`+(p.notas?`\n*Notas:* ${p.notas}`:'');
   $('form').hidden=true;$('bar').hidden=true;C={};
-  $('ok').hidden=false;$('ok').innerHTML=`<h3>¡Reserva registrada!</h3><p>Tu número de pedido es <b>${esc(r.data.id)}</b>. Total: <b>${m(r.data.total)}</b>.</p><p class="mu">Para confirmarla, envíanos el detalle por WhatsApp.</p><a class="btn" target="_blank" rel="noopener" href="https://wa.me/${WA}?text=${encodeURIComponent(t)}">Enviar a WhatsApp</a>`;$('ok').scrollIntoView()
+  $('ok').hidden=false;$('ok').innerHTML=`<h3 class="gold" style="font-size:1.8rem">¡Reserva registrada!</h3><p>Tu número de pedido es <b>${esc(r.data.id)}</b>. Total: <b>${m(r.data.total)}</b>.</p><p class="mu">Para confirmarla, envíanos el detalle por WhatsApp.</p><a class="btn" target="_blank" rel="noopener" href="https://wa.me/${WA}?text=${encodeURIComponent(t)}">Enviar a WhatsApp</a>`;$('ok').scrollIntoView()
  }catch(e){$('err').textContent='No se pudo registrar: '+(e.message||e)+'. Intenta de nuevo o escríbenos por WhatsApp.';b.disabled=false;b.textContent='Reservar pedido'}}
 </script></body></html>
