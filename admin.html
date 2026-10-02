@@ -32,7 +32,7 @@ dialog label{display:block;margin-top:10px;font-size:.85rem;color:var(--mu)}dial
  <nav id="nav"></nav><main id="v"></main></div>
 <div id="toast" hidden></div>
 <script>
-const API="https://script.google.com/macros/s/AKfycbyUaX1iTktQgPBcBsERhZR-zWEsVYjqYB1-O1LVmvrLgmvt14EnuTUbsmp-r8nP7LPV/exec";
+const API="https://script.google.com/macros/s/AKfycbz03goe_L3A1S36dvXgrhZOKWxZbL2TUsbjmY7T216fV0Y5s0G6i2rfIeErms2lKlc/exec";
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),m=n=>'$'+Number(n||0).toFixed(2);
 const hoy=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const AP=['En Preparación','En Camino','Entregado'],TABS=[['panel','Resumen'],['pedidos','Pedidos'],['inv','Inventario'],['compras','Compras'],['gastos','Gastos'],['clientes','Clientes'],['prods','Productos']];
