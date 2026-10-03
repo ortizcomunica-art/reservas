@@ -18,7 +18,7 @@ main{max-width:1100px;margin:0 auto;padding:16px}h2{margin:4px 0 14px}h3{margin:
 .c{background:var(--pn);border:1px solid var(--bd);border-radius:8px;padding:14px;margin-bottom:10px}
 .c .t{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.act{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.mu{color:var(--mu)}
 .s{padding:2px 9px;border-radius:12px;font-size:.78rem;font-weight:700;color:#fff;background:#555}
-.s.Pendiente{background:var(--ac);color:#000}.s.EnPreparación{background:#117a8b}.s.EnCamino{background:#0069d9}.s.Entregado{background:#1e7e34}.s.Rechazado{background:#b02a37}.s.bajo{background:#b02a37}
+.s.Pendiente{background:var(--ac);color:#000}.s.EnPreparación{background:#117a8b}.s.Listo{background:#6f42c1}.s.EnCamino{background:#0069d9}.s.Entregado{background:#1e7e34}.s.Rechazado{background:#b02a37}.s.bajo{background:#b02a37}
 .tw{overflow-x:auto}table{width:100%;border-collapse:collapse}th,td{padding:9px;border-bottom:1px solid var(--bd);text-align:left;white-space:nowrap}th{color:var(--ac);font-size:.85rem}
 .bar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}.bar>*{width:auto}
 dialog{background:var(--pn);color:var(--tx);border:1px solid var(--bd);border-radius:10px;padding:20px;width:min(92vw,420px)}dialog::backdrop{background:#000c}
@@ -35,7 +35,7 @@ dialog label{display:block;margin-top:10px;font-size:.85rem;color:var(--mu)}dial
 const API="https://script.google.com/macros/s/AKfycbz03goe_L3A1S36dvXgrhZOKWxZbL2TUsbjmY7T216fV0Y5s0G6i2rfIeErms2lKlc/exec";
 const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),m=n=>'$'+Number(n||0).toFixed(2);
 const hoy=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
-const AP=['En Preparación','En Camino','Entregado'],TABS=[['panel','Resumen'],['pedidos','Pedidos'],['inv','Inventario'],['compras','Compras'],['gastos','Gastos'],['clientes','Clientes'],['prods','Productos']];
+const AP=['En Preparación','Listo','En Camino','Entregado'],TABS=[['panel','Resumen'],['pedidos','Pedidos'],['inv','Inventario'],['compras','Compras'],['gastos','Gastos'],['clientes','Clientes'],['prods','Productos']];
 let T=sessionStorage.getItem('t'),D={},V='panel',F='Pendiente';
 async function api(a,p={}){const r=await(await fetch(API,{method:'POST',body:JSON.stringify({action:a,token:T,...p})})).json();
  if(!r.ok){if(/Sesión/.test(r.error))out();throw r.error}return r.data}
@@ -60,20 +60,21 @@ function vPanel(){const ms=mes(),ven=D.pedidos.filter(o=>AP.includes(o.estado)&&
  <h3>Alertas de inventario</h3>${b.length?b.map(i=>`<div class="c t"><span><b>${esc(i.insumo)}</b>: quedan ${i.stock} ${esc(i.unidad)} (mínimo ${i.minimo})</span><button class="b" onclick="compra('${i.id}')">Registrar compra</button></div>`).join(''):'<p class="mu">Todo el inventario está sobre el mínimo.</p>'}`}
 
 function vPed(){const L=D.pedidos.filter(o=>F==='Todos'||o.estado===F);
- return `<h2>Pedidos</h2><div class="bar"><select onchange="F=this.value;draw()" aria-label="Filtrar">${['Pendiente','En Preparación','En Camino','Entregado','Rechazado','Todos'].map(e=>`<option ${e===F?'selected':''}>${e}</option>`).join('')}</select><button class="b g" onclick="run(load)">Actualizar</button></div>`+
+ return `<h2>Pedidos</h2><div class="bar"><select onchange="F=this.value;draw()" aria-label="Filtrar">${['Pendiente','En Preparación','Listo','En Camino','Entregado','Rechazado','Todos'].map(e=>`<option ${e===F?'selected':''}>${e}</option>`).join('')}</select><button class="b g" onclick="run(load)">Actualizar</button></div>`+
  (L.length?L.map(o=>`<div class="c"><div class="t"><b>${esc(o.id)} · ${esc(o.cliente)}</b><span class="s ${o.estado.replace(/\s/g,'')}">${esc(o.estado)}</span></div>
  <p>${esc(o.fechaReserva)} ${esc(o.hora)} · ${esc(o.modalidad)} · ${esc(o.pago)} · <b>${m(o.total)}</b></p>
  <p>${its(o).map(i=>`${i.qty}× ${esc(i.nombre)}${i.opt?' ('+esc(i.opt)+')':''}`).join(', ')}</p>
  ${o.direccion?`<p class="mu">${esc(o.direccion)} ${esc(o.referencia)} <a style="color:var(--ac)" target="_blank" rel="noopener" href="https://maps.google.com/?q=${o.lat},${o.lng}">Ver mapa</a></p>`:''}${o.notas?`<p class="mu">Notas: ${esc(o.notas)}</p>`:''}
  <div class="act">${o.estado==='Pendiente'?`<button class="b ok" onclick="est('${o.id}','En Preparación')">Aprobar</button>`:''}
- ${o.estado==='En Preparación'?`<button class="b" onclick="est('${o.id}','En Camino')">${o.modalidad==='A domicilio'?'Salió a entregar':'Listo'}</button>`:''}
+ ${o.estado==='En Preparación'?`<button class="b" onclick="est('${o.id}','Listo')">Marcar listo</button>`:''}
+ ${o.estado==='Listo'?(o.modalidad==='A domicilio'?`<button class="b" onclick="est('${o.id}','En Camino')">Salió a entregar</button>`:`<button class="b ok" onclick="est('${o.id}','Entregado')">Entregado</button>`):''}
  ${o.estado==='En Camino'?`<button class="b ok" onclick="est('${o.id}','Entregado')">Entregado</button>`:''}
  ${['Pendiente','En Preparación'].includes(o.estado)?`<button class="b g" onclick="est('${o.id}','Rechazado')">Rechazar</button>`:''}
  <button class="b g" onclick="ws('${o.id}')">WhatsApp</button></div></div>`).join(''):'<p class="mu">No hay pedidos en este estado.</p>')}
 function est(id,e){if(e==='Rechazado'&&!confirm('¿Rechazar este pedido? Si ya descontó inventario, se devolverá.'))return;
  run(async()=>{const r=await api('estado',{id,estado:e});await load();toast(r.msg+(r.bajos.length?'. Stock bajo: '+r.bajos.join(', '):''))})}
 function ws(id){const o=D.pedidos.find(x=>x.id===id),n=o.cliente,t={'En Preparación':`Hola ${n}, tu reserva ${id} en EL BARRIL DEL PROFE fue aceptada y ya está en preparación.`,
- 'En Camino':o.modalidad==='A domicilio'?`Hola ${n}, tu pedido ${id} va en camino.`:`Hola ${n}, tu pedido ${id} está listo.`,'Entregado':`Hola ${n}, gracias por preferir EL BARRIL DEL PROFE.`,
+ 'En Camino':o.modalidad==='A domicilio'?`Hola ${n}, tu pedido ${id} va en camino.`:`Hola ${n}, tu pedido ${id} está listo.`,'Listo':`Hola ${n}, tu pedido ${id} está listo para retirar.`,'Entregado':`Hola ${n}, gracias por preferir EL BARRIL DEL PROFE.`,
  'Rechazado':`Hola ${n}, lamentablemente no podemos atender tu reserva ${id}. Escríbenos para coordinar otra opción.`}[o.estado]||`Hola ${n}, te escribimos de EL BARRIL DEL PROFE por tu reserva ${id}.`;
  window.open(`https://wa.me/${tel(o.telefono)}?text=${encodeURIComponent(t)}`,'_blank')}
 
@@ -90,7 +91,7 @@ const sel=()=>D.inventario.map(i=>[i.id,i.insumo+' ('+i.unidad+')']);
 function compra(id){form('Registrar compra',[{k:'fecha',l:'Fecha',t:'date',v:hoy()},{k:'proveedor',l:'Proveedor',v:''},{k:'insumoId',l:'Insumo',o:sel(),v:id},{k:'cantidad',l:'Cantidad comprada',t:'number'},{k:'total',l:'Total pagado',t:'number'}],
  async o=>{await api('compra',o);V='compras';await load();toast('Compra registrada y stock actualizado')})}
 function vCom(){return `<h2>Compras</h2><div class="bar"><button class="b" onclick="compra()">Nueva compra</button></div><div class="tw"><table><tr><th>Fecha</th><th>Proveedor</th><th>Insumo</th><th>Cantidad</th><th>Total</th></tr>`+
- D.compras.map(c=>`<tr><td>${esc(c.fecha)}</td><td>${esc(c.proveedor)}</td><td>${esc((D.inventario.find(i=>i.id===c.insumoId)||{}).insumo||c.insumoId)}</td><td>${c.cantidad}</td><td>${m(c.total)}</td></tr>`).join('')+'</table></div>'}
+ D.compras.map(c=>`<tr><td>${esc(c.fecha)}</td><td>${esc(c.proveedor)}</td><td>${esc(c.insumo||(D.inventario.find(i=>i.id===c.insumoId)||{}).insumo||c.insumoId)}</td><td>${c.cantidad}</td><td>${m(c.total)}</td></tr>`).join('')+'</table></div>'}
 function gasto(){form('Registrar gasto',[{k:'fecha',l:'Fecha',t:'date',v:hoy()},{k:'categoria',l:'Categoría',o:['Arriendo','Servicios','Sueldos','Gas y carbón','Transporte','Publicidad','Otros'].map(x=>[x,x])},{k:'descripcion',l:'Descripción'},{k:'monto',l:'Monto',t:'number'}],
  async o=>{await api('gasto',o);await load()})}
 function vGas(){return `<h2>Gastos</h2><div class="bar"><button class="b" onclick="gasto()">Nuevo gasto</button></div><div class="tw"><table><tr><th>Fecha</th><th>Categoría</th><th>Descripción</th><th>Monto</th></tr>`+
