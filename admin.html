@@ -100,13 +100,14 @@ function vCli(){const c={};D.pedidos.filter(o=>o.estado!=='Rechazado').forEach(o
  L.map(x=>`<tr><td>${esc(x.n)}</td><td><a style="color:var(--ac)" target="_blank" rel="noopener" href="https://wa.me/${tel(x.t)}">${esc(x.t)}</a></td><td>${x.p}</td><td>${m(x.s)}</td><td>${esc(x.u)}</td><td>${x.mk?'Acepta':'No'}</td></tr>`).join('')+'</table></div><p class="mu" style="margin-top:10px">Solo escribe promociones a quienes aceptaron recibirlas.</p>'}
 function prod(id){const p=D.productos.find(x=>x.id===id),n=!p;
  form(n?'Nuevo producto':'Editar producto',[{k:'nombre',l:'Nombre',v:p?.nombre},{k:'precio',l:'Precio',t:'number',v:p?.precio},{k:'categoria',l:'Categoría',o:['Carnes','Acompañantes','Bebidas','Postres'].map(x=>[x,x]),v:p?.categoria},
- {k:'descripcion',l:'Descripción',v:p?.descripcion,n:1},{k:'opciones',l:'Opciones separadas por | (ej. Plátano|Papas)',v:p?.opciones,n:1},{k:'activo',l:'Visible en el menú',o:[['SI','Sí'],['NO','No']],v:p?.activo||'SI'},
+ {k:'descripcion',l:'Descripción',v:p?.descripcion,n:1},{k:'opciones',l:'Opciones separadas por | (ej. Plátano|Papas)',v:p?.opciones,n:1},{k:'activo',l:'Estado en el menú',o:[['SI','Disponible'],['AGOTADO','Agotado hoy'],['NO','Oculto']],v:p?.activo||'SI'},
  {k:'receta',l:'Receta JSON: insumo y cantidad por unidad vendida',v:p?.receta||'{"base":{"INS-01":0.2}}'}],
  async o=>{await api('upsert',{sheet:'Productos',obj:{...(p||{id:'PROD-'+Date.now().toString(36).toUpperCase()}),...o}});await load()})}
-function vPro(){return `<h2>Productos y recetas</h2><div class="bar"><button class="b" onclick="prod()">Nuevo producto</button></div><div class="tw"><table><tr><th>Producto</th><th>Precio</th><th>Categoría</th><th>Visible</th><th></th></tr>`+
- D.productos.map(p=>`<tr><td>${esc(p.nombre)}</td><td>${m(p.precio)}</td><td>${esc(p.categoria)}</td><td>${p.activo==='SI'?'Sí':'No'}</td><td><button class="b g" onclick="prod('${p.id}')">Editar</button></td></tr>`).join('')+
+function vPro(){return `<h2>Productos y recetas</h2><div class="bar"><button class="b" onclick="prod()">Nuevo producto</button></div><div class="tw"><table><tr><th>Producto</th><th>Precio</th><th>Categoría</th><th>Estado</th><th></th></tr>`+
+ D.productos.map(p=>`<tr><td>${esc(p.nombre)}</td><td>${m(p.precio)}</td><td>${esc(p.categoria)}</td><td>${({SI:'Disponible',AGOTADO:'Agotado hoy'})[p.activo]||'Oculto'}</td><td><button class="b g" onclick="togg('${p.id}')">${p.activo==='AGOTADO'?'Reponer':'Agotar hoy'}</button> <button class="b g" onclick="prod('${p.id}')">Editar</button></td></tr>`).join('')+
  `</table></div><p class="mu" style="margin-top:10px">Códigos de insumo: ${D.inventario.map(i=>esc(i.id)+' = '+esc(i.insumo)).join(' · ')}</p>`}
 
+function togg(id){const p=D.productos.find(x=>x.id===id);run(async()=>{await api('upsert',{sheet:'Productos',obj:{...p,activo:p.activo==='AGOTADO'?'SI':'AGOTADO'}});await load()})}
 function form(t,fs,save){const d=document.createElement('dialog');
  d.innerHTML=`<form method="dialog"><h3>${esc(t)}</h3>${fs.map(f=>`<label>${esc(f.l)}${f.o?`<select name="${f.k}">${f.o.map(o=>`<option value="${esc(o[0])}" ${o[0]==f.v?'selected':''}>${esc(o[1])}</option>`).join('')}</select>`:`<input name="${f.k}" type="${f.t||'text'}" step="any" value="${esc(f.v)}" ${f.n?'':'required'}>`}</label>`).join('')}<div><button class="b g" value="x" formnovalidate>Cancelar</button><button class="b" value="ok">Guardar</button></div></form>`;
  document.body.append(d);d.showModal();
