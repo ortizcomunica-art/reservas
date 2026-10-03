@@ -1,0 +1,33 @@
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><title>Cocina - El Barril del Profe</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&display=swap">
+<style>
+:root{--bg:#0c0a08;--pn:#17130f;--tx:#f6efe4;--mu:#b8ab9a;--bd:#3a3026;--g1:#ffd23f;--g2:#f08a24}
+*{box-sizing:border-box;margin:0;padding:0}body{background:var(--bg);color:var(--tx);font:18px/1.45 'Segoe UI',system-ui,sans-serif;padding:14px 14px 40px;max-width:760px;margin:0 auto}
+h1{font:1.6rem 'Alfa Slab One',Impact,sans-serif;background:linear-gradient(var(--g1),var(--g2));-webkit-background-clip:text;background-clip:text;color:transparent}
+input,button{font:inherit}input{width:100%;padding:14px;background:#211b15;border:1px solid var(--bd);border-radius:8px;color:var(--tx);margin:12px 0}
+.b{display:block;background:linear-gradient(var(--g1),var(--g2));color:#1a1007;border:0;border-radius:10px;padding:16px;font-weight:800;width:100%;cursor:pointer;min-height:56px;text-align:center;text-decoration:none}.b.g{background:#333;color:var(--tx)}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}header .b{width:auto;min-height:0;padding:10px 14px}
+.c{background:var(--pn);border:1px solid var(--bd);border-radius:12px;padding:16px;margin-bottom:12px}.t{display:flex;justify-content:space-between;gap:8px}.t>.b{flex:1}
+.h{font:1.9rem 'Alfa Slab One',Impact,sans-serif;color:var(--g1)}.it{font-size:1.15rem;margin:6px 0}.mu{color:var(--mu);font-size:.95rem}
+.tag{display:inline-block;padding:2px 10px;border-radius:12px;background:#333;font-size:.8rem;font-weight:700;align-self:center}
+.sum{background:#211b15;border:1px dashed var(--g2);border-radius:12px;padding:12px;margin-bottom:14px}#st{color:var(--mu);font-size:.85rem;text-align:center;margin-top:8px}.vac{text-align:center;margin-top:40px}
+</style></head><body>
+<div id="lg"><h1>Cocina</h1><p class="mu">El Barril del Profe</p><input id="pw" type="password" placeholder="Clave" autocomplete="current-password" onkeydown="if(event.key==='Enter')go()"><button class="b" onclick="go()">Ingresar</button><p id="er" class="mu"></p></div>
+<div id="app" hidden><header><h1>Cocina</h1><button class="b g" onclick="out()">Salir</button></header><div id="v"></div><p id="st"></p></div>
+<script>
+const API="https://script.google.com/macros/s/AKfycbz03goe_L3A1S36dvXgrhZOKWxZbL2TUsbjmY7T216fV0Y5s0G6i2rfIeErms2lKlc/exec",ROL="cocina",$=s=>document.querySelector(s),m=n=>'$'+Number(n||0).toFixed(2);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const hoy=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const its=o=>o.items.map(i=>`<div class="it">${i.qty}× ${esc(i.nombre)}${i.opt?' ('+esc(i.opt)+')':''}</div>`).join('');
+let T=sessionStorage.getItem('t_'+ROL),L=[],iv;
+async function api(a,p={}){const r=await(await fetch(API,{method:'POST',body:JSON.stringify({action:a,token:T,...p})})).json();if(!r.ok){if(/Sesión/.test(r.error))out();throw r.error}return r.data}
+async function go(){try{$('#er').textContent='';const r=await api('login',{rol:ROL,pass:$('#pw').value});T=r.token;sessionStorage.setItem('t_'+ROL,T);start()}catch(e){$('#er').textContent=e.message||e}}
+function out(){sessionStorage.removeItem('t_'+ROL);T=null;clearInterval(iv);$('#app').hidden=true;$('#lg').hidden=false}
+function start(){$('#lg').hidden=true;$('#app').hidden=false;load();clearInterval(iv);iv=setInterval(load,20000)}
+async function load(){try{L=await api('cola');draw();$('#st').textContent='Actualizado '+new Date().toLocaleTimeString('es-EC',{hour:'2-digit',minute:'2-digit'})}catch(e){$('#st').textContent='Sin conexión: '+(e.message||e)}}
+async function adv(id){try{await api('avanzar',{id});await load()}catch(e){alert(e.message||e);load()}}
+function draw(){const tot={};L.forEach(o=>o.items.forEach(i=>{const k=i.nombre+(i.opt?' ('+i.opt+')':'');tot[k]=(tot[k]||0)+i.qty}));
+ $('#v').innerHTML=(L.length?`<div class="sum"><b>Por preparar</b>${Object.keys(tot).map(k=>`<div class="it">${tot[k]}× ${esc(k)}</div>`).join('')}</div>`:'')+
+ (L.length?L.map(o=>`<div class="c"><div class="t"><span class="h">${esc(o.hora)}</span><span class="tag">${o.fechaReserva===hoy()?'HOY':esc(o.fechaReserva)} · ${esc(o.modalidad)}</span></div><div class="mu">${esc(o.id)} · ${esc(o.cliente)}</div>${its(o)}${o.notas?`<div class="mu">Nota: ${esc(o.notas)}</div>`:''}<button class="b" style="margin-top:10px" onclick="adv('${esc(o.id)}')">Listo</button></div>`).join(''):'<p class="mu vac">No hay pedidos por preparar.</p>')}
+if(T)start();
+</script></body></html>
