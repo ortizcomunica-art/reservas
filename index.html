@@ -115,7 +115,7 @@ function slots(){const d=new Date($('fec').value+'T12:00'),x=HR[d.getDay()],s=$(
  let o='',t=x[0];if(ymd(d)===ymd(new Date())){const n=new Date();t=Math.max(t,Math.ceil((n.getHours()+n.getMinutes()/60+.5)*2)/2)}
  for(;t<x[1];t+=.5)o+=`<option>${pad(Math.floor(t))}:${t%1?'30':'00'}</option>`;s.innerHTML=o||'<option value="">Ya no hay horarios hoy</option>'}
 $('fec').min=ymd(new Date());$('fec').value=ymd(nextOpen());slots();abre();
-fetch(API).then(r=>r.json()).then(r=>{if(r.ok&&r.data.productos.length)M=r.data.productos}).catch(()=>{}).finally(menu);
+fetch(API+'?t='+Date.now(),{cache:'no-store'}).then(r=>r.json()).then(r=>{if(r.ok&&r.data.productos.length)M=r.data.productos}).catch(()=>{}).finally(menu);
 const key=id=>id+'|'+($('o-'+id)?$('o-'+id).value:'');
 function menu(){const g={};M.forEach(p=>(g[p.categoria]=g[p.categoria]||[]).push(p));
  $('menu').innerHTML=Object.keys(g).map(c=>`<h3 class="cat gold">${esc(c)}</h3>`+g[c].map(p=>`<article class="pr"><div class="it"><span>${esc(p.nombre)}</span><i></i><b>${m(p.precio)}</b></div><p>${esc(p.descripcion)}</p>`+
