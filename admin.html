@@ -62,7 +62,7 @@ function vPanel(){const ms=mes(),ven=D.pedidos.filter(o=>AP.includes(o.estado)&&
 function vPed(){const L=D.pedidos.filter(o=>F==='Todos'||o.estado===F);
  return `<h2>Pedidos</h2><div class="bar"><select onchange="F=this.value;draw()" aria-label="Filtrar">${['Pendiente','En Preparación','Listo','En Camino','Entregado','Rechazado','Todos'].map(e=>`<option ${e===F?'selected':''}>${e}</option>`).join('')}</select><button class="b g" onclick="run(load)">Actualizar</button></div>`+
  (L.length?L.map(o=>`<div class="c"><div class="t"><b>${esc(o.id)} · ${esc(o.cliente)}</b><span class="s ${o.estado.replace(/\s/g,'')}">${esc(o.estado)}</span></div>
- <p>${esc(o.fechaReserva)} ${esc(o.hora)} · ${esc(o.modalidad)} · ${esc(o.pago)} · <b>${m(o.total)}</b></p>
+ <p>${esc(o.fechaReserva)} ${esc(o.hora)} · ${esc(o.modalidad)} · ${esc(o.pago)} · <b>${m(o.total)}</b>${+o.descuento?` <span class="mu">(incluye −${m(o.descuento)} de descuento)</span>`:''}</p>
  <p>${its(o).map(i=>`${i.qty}× ${esc(i.nombre)}${i.opt?' ('+esc(i.opt)+')':''}`).join(', ')}</p>
  ${o.direccion?`<p class="mu">${esc(o.direccion)} ${esc(o.referencia)} <a style="color:var(--ac)" target="_blank" rel="noopener" href="https://maps.google.com/?q=${o.lat},${o.lng}">Ver mapa</a></p>`:''}${o.notas?`<p class="mu">Notas: ${esc(o.notas)}</p>`:''}
  <div class="act">${o.estado==='Pendiente'?`<button class="b ok" onclick="est('${o.id}','En Preparación')">Aprobar</button>`:''}
