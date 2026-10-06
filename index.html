@@ -63,13 +63,33 @@ footer{text-align:center;color:var(--mu);font-size:.82rem;padding:0 20px 20px}
 .cats a{flex:none;padding:8px 18px;border:1px solid var(--bd);border-radius:20px;color:var(--tx);text-decoration:none;font-weight:600;font-size:.9rem}.cats a:hover{border-color:var(--g1);color:var(--g1)}
 .cat{scroll-margin-top:130px}
 .wa{position:fixed;right:12px;bottom:calc(84px + env(safe-area-inset-bottom));z-index:8;background:#1f9d55;color:#fff;text-decoration:none;font-weight:800;font-size:.85rem;padding:11px 16px;border-radius:24px;box-shadow:0 4px 14px #000a}
+
+/* Pop-up de promoción */
+#promo{margin:auto;width:min(92vw,400px);background:var(--pn);color:var(--tx);border:2px solid var(--g2);border-radius:14px;padding:28px 22px;text-align:center;box-shadow:0 12px 40px #000}
+#promo::backdrop{background:rgba(0,0,0,.75)}
+#promo .big{font:400 3.4rem/1 Bronco,'Alfa Slab One',Impact,sans-serif}
+#promo h3{font-size:1.7rem;margin:6px 0 10px}
+#promo p{color:var(--mu);margin-bottom:18px}
+#promo small{display:block;margin-top:12px;color:var(--mu);font-size:.78rem}
+#promo .cl{position:absolute;top:6px;right:8px;background:0;border:0;color:var(--mu);font-size:1.5rem;min-width:44px;min-height:44px;cursor:pointer}
+/* Datos de transferencia */
+.bank{background:var(--cd);border:1px dashed var(--g2);border-radius:8px;padding:14px;margin-top:12px;font-size:.92rem}
+.bank p{margin-top:6px}.bank .cp{margin-left:6px;padding:4px 12px;background:var(--bl);color:#fff;border:0;border-radius:6px;font:700 .8rem Montserrat,sans-serif;cursor:pointer}
 </style></head><body>
+<dialog id="promo" aria-labelledby="pt">
+ <form method="dialog"><button class="cl" aria-label="Cerrar">✕</button></form>
+ <div class="big gold">10%</div>
+ <h3 id="pt" class="gold">de descuento</h3>
+ <p>Reserva tu pedido y paga por transferencia: te descontamos el 10% de tu compra. Válido para pedidos hechos hasta el sábado 10 de octubre.</p>
+ <a class="btn" href="#pedido" id="promoGo">¡Quiero mi descuento!</a>
+ <small>El descuento aplica a los productos, no al costo de envío.</small>
+</dialog>
 <header><a href="#inicio" aria-label="Inicio"><img src="https://raw.githubusercontent.com/ortizcomunica-art/reservas/d5152a9f6ad1cc4b5d2bcc999870b5715b375cb4/LOGO.png" alt="El Barril del Profe"></a><a class="btn" href="#pedido">Hacer pedido</a></header>
 <section id="inicio" class="hero">
  <img src="https://raw.githubusercontent.com/ortizcomunica-art/reservas/d5152a9f6ad1cc4b5d2bcc999870b5715b375cb4/LOGO.png" alt="El Barril del Profe - Carnes al barril">
  <h1 class="gold">Sabor hecho a fuego</h1>
  <p>Preparamos cada plato según lo que pides. Reserva tu pedido, elige la hora y retíralo sin esperar.</p>
- <div class="chips"><span>Cocinado al barril</span><span>Preparado según tu pedido</span><span>Retiro sin esperas</span></div>
+ <div class="chips"><span>Reserva y paga al recibir</span><span>Preparado según tu pedido</span><span>Retiro sin esperas</span></div>
  <div id="abre"></div><br><a class="btn" href="#pedido">Ver el menú y pedir</a><a class="btn o" href="#ubicacion">Cómo llegar</a>
 </section>
 <section class="steps"><div><b class="gold">1. Elige</b><span>Arma tu pedido con el menú</span></div><div><b class="gold">2. Reserva</b><span>Escoge el día y la hora</span></div><div><b class="gold">3. Retira o recibe</b><span>En el local o a domicilio, hasta 5 km</span></div></section>
@@ -95,7 +115,12 @@ footer{text-align:center;color:var(--mu);font-size:.82rem;padding:0 20px 20px}
     <label for="ref">Referencia</label><textarea id="ref" rows="2" placeholder="Ej. Casa blanca junto al parque"></textarea></div>
    <h3 class="gold" style="margin-top:22px;font-size:1.4rem">Productos</h3><div id="cart"></div><div id="tot"></div>
    <label>Forma de pago</label>
-   <div class="opts"><label><input type="radio" name="pago" value="Efectivo" checked><span>Efectivo</span></label><label><input type="radio" name="pago" value="Transferencia"><span>Transferencia</span></label></div>
+   <div class="opts"><label><input type="radio" name="pago" value="Efectivo" checked onchange="draw()"><span>Efectivo</span></label><label><input type="radio" name="pago" value="Transferencia" onchange="draw()"><span>Transferencia · 10% dto.</span></label></div>
+   <div id="bank" class="bank" hidden>
+    <b class="gold">Datos para tu transferencia</b>
+    <p>Banco Pichincha · Cuenta de ahorros<br>N.º <b>2202676975</b> <button type="button" class="cp" id="cp" onclick="cop()">Copiar</button><br>Luis Stalin Ortíz Belalcázar<br>C.I. 1716158314</p>
+    <p class="mu">Transfiere el total y envíanos el comprobante por WhatsApp para confirmar tu pedido.</p>
+   </div>
    <label for="nota">Observaciones</label><textarea id="nota" rows="2" placeholder="Cubiertos, salsas, sin ají…"></textarea>
    <label class="chk" style="margin-top:14px"><input type="checkbox" id="mk"><span>Quiero recibir promociones de El Barril del Profe por WhatsApp.</span></label>
    <p id="err" role="alert"></p><button class="btn go" id="go" onclick="send()">Reservar pedido</button></div></div>
@@ -105,7 +130,7 @@ footer{text-align:center;color:var(--mu);font-size:.82rem;padding:0 20px 20px}
 <section id="barril" class="nos" hidden><img src="img/barril.jpg" alt="El barril del Profe" onload="this.parentElement.hidden=false" onerror="this.remove()"><div><h3 class="gold">Cocinado al barril</h3><p>Cocinamos con carbón y preparamos tu pedido para la hora que elijas.</p></div></section>
 <h2 class="gold">Preguntas frecuentes</h2>
 <section class="faq">
-<details><summary>¿Cómo puedo pagar?</summary><p>En efectivo o por transferencia. Por ahora no contamos con pago con tarjeta.</p></details>
+<details><summary>¿Cómo puedo pagar?</summary><p>En efectivo o por transferencia. Pagando por transferencia tienes 10% de descuento en pedidos hechos hasta el 10 de octubre. Por ahora no contamos con pago con tarjeta.</p></details>
 <details><summary>¿Hasta dónde entregan?</summary><p>A domicilio hasta 5 km a la redonda del local. El costo de envío se calcula al marcar tu ubicación en el mapa.</p></details>
 <details><summary>¿Puedo reservar para otro día?</summary><p>Sí, para cualquier viernes, sábado o domingo. Escoge el día y la hora en el formulario.</p></details>
 <details><summary>¿Cómo confirmo mi pedido?</summary><p>Al reservar te damos un número de pedido y un botón para enviarnos el detalle por WhatsApp.</p></details>
@@ -132,6 +157,8 @@ let M=[ // menú de respaldo: se reemplaza por el de la hoja cuando el script re
 const $=i=>document.getElementById(i),m=n=>'$'+Number(n).toFixed(2);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const pad=n=>String(n).padStart(2,'0'),ymd=d=>d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const PROMO={pct:10,hasta:'2026-10-10'}; // si cambias la fecha, cámbiala también en DESC de Code.gs
+const promoOn=()=>ymd(new Date())<=PROMO.hasta,pagoTr=()=>document.querySelector('[name=pago]:checked').value==='Transferencia';
 let C={},map,pin,pos=ST,moved=0,km=0,fee=0;
 // Horario: día (0=dom ... 6=sáb) -> [abre, cierra]
 const HR={5:[18,20],6:[10,20],0:[10,20]},DN=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
@@ -156,8 +183,9 @@ function del(i){delete C[Object.keys(C)[i]];draw()}
 function draw(){M.forEach(p=>{const e=$('q-'+p.id);if(e)e.textContent=(C[key(p.id)]||{}).qty||0});
  const ks=Object.keys(C),sub=ks.reduce((s,k)=>s+C[k].precio*C[k].qty,0),env=$('delivery').checked?fee:0,n=ks.reduce((s,k)=>s+C[k].qty,0);
  $('cart').innerHTML=ks.length?ks.map((k,i)=>`<div class="ci"><span>${C[k].qty}× ${esc(C[k].nombre)}${C[k].opt?' ('+esc(C[k].opt)+')':''}</span><span>${m(C[k].precio*C[k].qty)} <button class="x" aria-label="Quitar del pedido" onclick="del(${i})">✕</button></span></div>`).join(''):'<p class="mu">Aún no agregas productos. Usa + en el menú.</p>';
- $('tot').innerHTML=`Subtotal ${m(sub)} · Envío ${m(env)}<br><b class="gold" style="font-size:1.3rem">Total ${m(sub+env)}</b>`;
- $('bar').hidden=!n;$('bar').textContent=`Ver mi pedido (${n}) · ${m(sub+env)}`}
+ const dsc=promoOn()&&pagoTr()?Math.round(sub*PROMO.pct)/100:0,fin=sub+env-dsc;$('bank').hidden=!pagoTr();
+ $('tot').innerHTML=`Subtotal ${m(sub)} · Envío ${m(env)}`+(dsc?`<br><span style="color:#7be08f">Descuento ${PROMO.pct}% por transferencia −${m(dsc)}</span>`:'')+`<br><b class="gold" style="font-size:1.3rem">Total ${m(fin)}</b>`;
+ $('bar').hidden=!n;$('bar').textContent=`Ver mi pedido (${n}) · ${m(fin)}`}
 function tg(){const d=$('delivery').checked;$('dbox').hidden=!d;if(d){map?setTimeout(()=>map.invalidateSize(),200):iniMap()}draw()}
 function dist(a,b,c,d){const r=x=>x*Math.PI/180,q=Math.sin(r(c-a)/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(r(d-b)/2)**2;return 6371*2*Math.atan2(Math.sqrt(q),Math.sqrt(1-q))}
 function iniMap(){map=L.map('map').setView([ST.lat,ST.lng],14);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap'}).addTo(map);
@@ -182,9 +210,13 @@ async function send(){const g=i=>$(i).value.trim(),dom=$('delivery').checked,ks=
  try{const r=await(await fetch(API,{method:'POST',body:JSON.stringify(p)})).json();if(!r.ok)throw r.error;
   let t=`Hola *EL BARRIL DEL PROFE*, acabo de reservar el pedido *${r.data.id}*.\n*Cliente:* ${p.cliente}\n*Día y hora:* ${p.fechaReserva} ${p.hora}\n*Pedido:* ${its.map(i=>i.qty+'x '+i.nombre+(i.opt?' ('+i.opt+')':'')).join(', ')}\n*Modalidad:* ${mod}\n`;
   if(dom)t+=`*Dirección:* ${p.direccion}\n*Ubicación:* https://maps.google.com/?q=${pos.lat},${pos.lng}\n`;
-  t+=`*Pago:* ${pago}\n*Total:* ${m(r.data.total)}`+(p.notas?`\n*Notas:* ${p.notas}`:'');
+  t+=`*Pago:* ${pago}\n`+(r.data.descuento?`*Descuento ${PROMO.pct}% por transferencia:* −${m(r.data.descuento)}\n`:'')+`*Total:* ${m(r.data.total)}`+(pago==='Transferencia'?'\n*Te envío el comprobante a continuación*':'')+(p.notas?`\n*Notas:* ${p.notas}`:'');
   $('form').hidden=true;$('bar').hidden=true;C={};
-  $('ok').hidden=false;$('ok').innerHTML=`<h3 class="gold" style="font-size:1.8rem">¡Reserva registrada!</h3><p>Tu número de pedido es <b>${esc(r.data.id)}</b>. Total: <b>${m(r.data.total)}</b>.</p><p class="mu">Para confirmarla, envíanos el detalle por WhatsApp.</p><a class="btn" target="_blank" rel="noopener" href="https://wa.me/${WA}?text=${encodeURIComponent(t)}">Enviar a WhatsApp</a>`;$('ok').scrollIntoView()
+  $('ok').hidden=false;$('ok').innerHTML=`<h3 class="gold" style="font-size:1.8rem">¡Reserva registrada!</h3><p>Tu número de pedido es <b>${esc(r.data.id)}</b>. Total: <b>${m(r.data.total)}</b>${r.data.descuento?` (ahorraste ${m(r.data.descuento)})`:''}.</p>${pago==='Transferencia'?`<p>Transfiere <b>${m(r.data.total)}</b> a la cuenta de ahorros Banco Pichincha <b>2202676975</b> (Luis Stalin Ortíz Belalcázar, C.I. 1716158314) y envíanos el comprobante por WhatsApp.</p>`:''}<p class="mu">Para confirmarla, envíanos el detalle por WhatsApp.</p><a class="btn" target="_blank" rel="noopener" href="https://wa.me/${WA}?text=${encodeURIComponent(t)}">Enviar a WhatsApp</a>`;$('ok').scrollIntoView()
  }catch(e){$('err').textContent='No se pudo registrar: '+(e.message||e)+'. Intenta de nuevo o escríbenos por WhatsApp.';b.disabled=false;b.textContent='Reservar pedido'}}
+function cop(){navigator.clipboard&&navigator.clipboard.writeText('2202676975').then(()=>{$('cp').textContent='¡Copiado!';setTimeout(()=>$('cp').textContent='Copiar',2000)}).catch(()=>{})}
+// Pop-up: una vez por visita y solo mientras dure la promoción
+if(promoOn()&&!sessionStorage.getItem('promo'))setTimeout(()=>{$('promo').showModal();sessionStorage.setItem('promo','1')},1200);
+$('promoGo').onclick=()=>{$('promo').close();document.querySelector('[name=pago][value=Transferencia]').checked=true;draw()};
 </script><script type="application/ld+json">{"@context":"https://schema.org","@type":"Restaurant","name":"El Barril del Profe","servesCuisine":"Carnes al barril","telephone":"+593992506756","priceRange":"$","address":{"@type":"PostalAddress","streetAddress":"Av. Francisca Sinasigchi N60-195 y Av. del Maestro","addressLocality":"Quito","addressCountry":"EC"},"geo":{"@type":"GeoCoordinates","latitude":-0.12422216520351366,"longitude":-78.48703013498067},"openingHoursSpecification":[{"@type":"OpeningHoursSpecification","dayOfWeek":"Friday","opens":"18:00","closes":"20:00"},{"@type":"OpeningHoursSpecification","dayOfWeek":["Saturday","Sunday"],"opens":"10:00","closes":"20:00"}]}</script>
 </body></html>
